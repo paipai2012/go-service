@@ -8,6 +8,8 @@ import (
 	"moose-go/util"
 
 	"github.com/gin-gonic/gin"
+
+	socketio "github.com/googollee/go-socket.io"
 )
 
 func main() {
@@ -35,6 +37,16 @@ func initApp() {
 	// app.Use(Auth())
 
 	router.InitRouter(app)
+
+	// init socket io
+	server, err := socketio.NewServer(nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go server.Serve()
+	defer server.Close()
+	router.InitSocket(app, server)
 
 	app.Run("0.0.0.0:8090")
 }
