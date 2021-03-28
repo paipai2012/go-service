@@ -24,7 +24,7 @@ func initApp() {
 		return
 	}
 
-	_, err = engine.OrmEngine(config)
+	_, err = engine.NewOrmEngine(config)
 	if err != nil {
 		log.Fatal(err.Error())
 		return
@@ -33,6 +33,10 @@ func initApp() {
 	gin.SetMode(config.AppMode)
 
 	app := gin.Default()
+
+	// 使用中间件
+	app.Use(gin.Logger())
+	app.Use(gin.Recovery())
 
 	// app.Use(Auth())
 
