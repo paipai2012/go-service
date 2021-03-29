@@ -1,9 +1,14 @@
-package v1
+package controller
 
 import (
+	"context"
+	"encoding/json"
 	"log"
 	"moose-go/common"
+	"moose-go/engine"
+	"moose-go/model"
 	"moose-go/service"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,11 +16,19 @@ import (
 type UserController struct {
 }
 
-func (uc *UserController) RegisterRouter(engine *gin.Engine) {
-	group := engine.Group("/api/v1/user")
+var ctx = context.Background()
+
+var redisHelper *engine.RedisHelper
+
+func (uc *UserController) RegisterRouter(app *gin.Engine) {
+	redisHelper = engine.GetRedisHelper()
+
+	group := app.Group("/api/v1/user")
 	group.POST("/add", uc.Add)
 	group.GET("/get", uc.GetUser)
 	group.GET("/list", uc.List)
+	group.GET("/cache", uc.CacheUser)
+	group.GET("/cache/get", uc.GetCacheUser)
 }
 
 func (uc *UserController) Add(c *gin.Context) {
@@ -31,9 +44,33 @@ func (uc *UserController) Add(c *gin.Context) {
 }
 
 func (uc *UserController) GetUser(c *gin.Context) {
-	userId := c.GetInt64("userId")
+	userId := c.GetString("userId")
 	userService := service.UserService{}
 	common.Success(c, userService.GetUserByUserId(userId), "获取用户")
+}
+
+func (uc *UserController) CacheUser(c *gin.Context) {
+	userInfo := &model.UserInfo{UserId: "56867897283718"}
+	name, err := redisHelper.Set(ctx, "moose-go", userInfo, 10*time.Minute).Result()
+	if err != nil {
+		log.Fatal(err)
+		common.Failed(c, "缓存用户失败")
+		return
+	}
+	common.Success(c, name, "缓存用户成功")
+}
+
+func (uc *UserController) GetCacheUser(c *gin.Context) {
+	name, err := redisHelper.Get(ctx, "moose-go").Result()
+	if err != nil {
+		log.Fatal(err)
+		common.Failed(c, "获取缓存用户失败")
+		return
+	}
+
+	var userInfo model.UserInfo
+	json.Unmarshal([]byte(name), &userInfo)
+	common.Success(c, userInfo, "获取缓存用户成功")
 }
 
 func (uc *UserController) List(c *gin.Context) {

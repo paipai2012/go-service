@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"moose-go/engine"
@@ -10,6 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	socketio "github.com/googollee/go-socket.io"
+)
+
+var (
+	ctx = context.Background()
 )
 
 func main() {
@@ -26,6 +31,12 @@ func initApp() {
 
 	_, err = engine.NewOrmEngine(config)
 	if err != nil {
+		log.Fatal(err.Error())
+		return
+	}
+
+	rdb := engine.NewRedisHelper()
+	if _, err := rdb.Ping(ctx).Result(); err != nil {
 		log.Fatal(err.Error())
 		return
 	}

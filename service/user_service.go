@@ -1,8 +1,6 @@
 package service
 
 import (
-	"bytes"
-	"encoding/binary"
 	"moose-go/dao"
 	"moose-go/engine"
 	"moose-go/model"
@@ -14,8 +12,8 @@ type UserService struct {
 func (us *UserService) AddUser(userName string) (int64, error) {
 	userInfo := model.UserInfo{
 		UserName:    userName,
-		UserId:      1,
-		AccountId:   1,
+		UserId:      "1",
+		AccountId:   "1",
 		AccountName: "JiangJing",
 		Gender:      "1",
 		Phone:       "15798980298",
@@ -28,7 +26,7 @@ func (us *UserService) AddUser(userName string) (int64, error) {
 	return userDao.InsertUser(&userInfo)
 }
 
-func (us *UserService) GetUserByUserId(userId int64) *model.UserInfo {
+func (us *UserService) GetUserByUserId(userId string) *model.UserInfo {
 	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
 	return userDao.QueryByUserId(userId)
 }
@@ -40,7 +38,7 @@ func (us *UserService) GetAllUser() []*model.UserInfo {
 	list := make([]*model.UserInfo, len(rows))
 	for index, value := range rows {
 		// []byte
-		UserId := bytesToInt(value["user_id"])
+		UserId := string(value["user_id"])
 		UserName := string(value["username"])
 		Phone := string(value["phone"])
 		Avatar := string(value["avatar"])
@@ -51,9 +49,9 @@ func (us *UserService) GetAllUser() []*model.UserInfo {
 	return list
 }
 
-func bytesToInt(bys []byte) int64 {
-	bytebuff := bytes.NewBuffer(bys)
-	var data int64
-	binary.Read(bytebuff, binary.BigEndian, &data)
-	return int64(data)
-}
+// func bytesToInt(bys []byte) int64 {
+// 	bytebuff := bytes.NewBuffer(bys)
+// 	var data int64
+// 	binary.Read(bytebuff, binary.BigEndian, &data)
+// 	return int64(data)
+// }

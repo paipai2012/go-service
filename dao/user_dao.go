@@ -21,7 +21,7 @@ func (ud *UserDao) InsertUser(userInfo *model.UserInfo) (int64, error) {
 	return result, err
 }
 
-func (ud *UserDao) QueryByUserId(userId int64) *model.UserInfo {
+func (ud *UserDao) QueryByUserId(userId string) *model.UserInfo {
 	userInfo := model.UserInfo{
 		UserId: userId,
 	}

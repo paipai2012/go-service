@@ -3,6 +3,7 @@ package engine
 import (
 	"fmt"
 	"moose-go/model"
+	"sync"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -10,14 +11,16 @@ import (
 	"xorm.io/xorm/names"
 )
 
-var _dbEngine *Orm
-
 type Orm struct {
 	*xorm.Engine
 }
 
+var dbEngine *Orm
+
+var ormOnce sync.Once
+
 func GetOrmEngine() *Orm {
-	return _dbEngine
+	return dbEngine
 }
 
 func NewOrmEngine(appInfo *model.AppInfo) (*xorm.Engine, error) {
@@ -36,14 +39,17 @@ func NewOrmEngine(appInfo *model.AppInfo) (*xorm.Engine, error) {
 	engine.ShowSQL(true)
 
 	// 创建表
-	err = engine.Sync2(new(model.UserInfo))
-	if err != nil {
-		return nil, err
-	}
+	// err = engine.Sync2(new(model.UserInfo))
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	orm := new(Orm)
-	orm.Engine = engine
-	_dbEngine = orm
+	// 单利模式
+	ormOnce.Do(func() {
+		orm := new(Orm)
+		orm.Engine = engine
+		dbEngine = orm
+	})
 
 	return engine, nil
 }
