@@ -24,53 +24,59 @@ func (uc *UserController) RegisterRouter(app *gin.Engine) {
 	redisHelper = engine.GetRedisHelper()
 
 	group := app.Group("/api/v1/user")
-	group.POST("/add", uc.Add)
+	group.POST("/info", uc.Info)
+	group.POST("/add", uc.AddUser)
 	group.GET("/get", uc.GetUser)
 	group.GET("/list", uc.List)
 	group.GET("/cache", uc.CacheUser)
 	group.GET("/cache/get", uc.GetCacheUser)
 }
 
-func (uc *UserController) Add(c *gin.Context) {
+func (uc *UserController) Info(c *gin.Context) {
+	// 江景 -->
+	common.Success(c, "775113183131074580")
+}
+
+func (uc *UserController) AddUser(c *gin.Context) {
 	userName, _ := c.GetQuery("userName")
 	userService := service.UserService{}
 	row, err := userService.AddUser(userName)
 	if err == nil && row > 0 {
-		common.Success(c, 1, "添加用户成功")
+		common.Success(c, 1)
 		return
 	}
-	log.Fatal(err)
-	common.Failed(c, "添加用户失败")
+	log.Panic(err)
+	common.Failed(c, "add user fail")
 }
 
 func (uc *UserController) GetUser(c *gin.Context) {
 	userId := c.GetString("userId")
 	userService := service.UserService{}
-	common.Success(c, userService.GetUserByUserId(userId), "获取用户")
+	common.Success(c, userService.GetUserByUserId(userId))
 }
 
 func (uc *UserController) CacheUser(c *gin.Context) {
 	userInfo := &model.UserInfo{UserId: "56867897283718"}
 	name, err := redisHelper.Set(ctx, "moose-go", userInfo, 10*time.Minute).Result()
 	if err != nil {
-		log.Fatal(err)
-		common.Failed(c, "缓存用户失败")
+		log.Panic(err)
+		common.Failed(c, "cache user fail")
 		return
 	}
-	common.Success(c, name, "缓存用户成功")
+	common.Success(c, name)
 }
 
 func (uc *UserController) GetCacheUser(c *gin.Context) {
 	name, err := redisHelper.Get(ctx, "moose-go").Result()
 	if err != nil {
-		log.Fatal(err)
-		common.Failed(c, "获取缓存用户失败")
+		log.Panic(err)
+		common.Failed(c, "get cache user fail")
 		return
 	}
 
 	var userInfo model.UserInfo
 	json.Unmarshal([]byte(name), &userInfo)
-	common.Success(c, userInfo, "获取缓存用户成功")
+	common.Success(c, userInfo)
 }
 
 func (uc *UserController) List(c *gin.Context) {
@@ -80,5 +86,5 @@ func (uc *UserController) List(c *gin.Context) {
 	// 	userList = append(userList, user)
 	// }
 	userService := service.UserService{}
-	common.Success(c, userService.GetAllUser(), "获取用户列表")
+	common.Success(c, userService.GetAllUser())
 }

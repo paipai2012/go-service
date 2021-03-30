@@ -1,3 +1,3 @@
 package constant
 
-const MOOSE_TICKET = "moose-go:ticket:%s"
+const MOOSE_SCAN_TICKET = "moose-go:ticket:%s"

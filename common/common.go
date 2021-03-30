@@ -7,19 +7,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Success(c *gin.Context, data interface{}, message string) {
+func Success(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, gin.H{
 		"code":    http.StatusOK,
 		"data":    data,
-		"message": message,
+		"message": "请求成功",
 	})
-	c.Abort()
 }
 
 func Failed(c *gin.Context, message interface{}) {
 	c.JSON(http.StatusOK, gin.H{
 		"code":    http.StatusBadRequest,
 		"message": message,
+	})
+}
+
+func Unauthorized(c *gin.Context) {
+	c.JSON(http.StatusUnauthorized, gin.H{
+		"code":    http.StatusUnauthorized,
+		"message": "未授权，请登录！",
 	})
 }
 

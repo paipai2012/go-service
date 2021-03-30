@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"moose-go/engine"
+	"moose-go/middleware"
 	"moose-go/router"
 	"moose-go/util"
 
@@ -46,10 +46,8 @@ func initApp() {
 	app := gin.Default()
 
 	// 使用中间件
-	app.Use(gin.Logger())
-	app.Use(gin.Recovery())
-
-	// app.Use(Auth())
+	app.Use(middleware.CatchError())
+	app.Use(middleware.AuthRequired())
 
 	router.InitRouter(app)
 
@@ -64,10 +62,4 @@ func initApp() {
 	router.InitSocket(app, server)
 
 	app.Run("0.0.0.0:8090")
-}
-
-func Auth() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		fmt.Println("auth ...")
-	}
 }
