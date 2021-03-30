@@ -15,9 +15,9 @@ func Success(c *gin.Context, data interface{}) {
 	})
 }
 
-func Failed(c *gin.Context, message interface{}) {
+func Failed(c *gin.Context, code int, message string) {
 	c.JSON(http.StatusOK, gin.H{
-		"code":    http.StatusBadRequest,
+		"code":    code,
 		"message": message,
 	})
 }

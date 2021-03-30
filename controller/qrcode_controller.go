@@ -31,6 +31,6 @@ func (qrc *QRCodeController) AskQRCode(c *gin.Context) {
 
 func (qrc *QRCodeController) ScanLogin(c *gin.Context) {
 	qrCodeService := service.QRCodeService{}
-	authInfo := qrCodeService.ScanLogin(c)
-	common.Success(c, authInfo)
+	qrCodeService.ScanLogin(c)
+	common.Success(c, 1)
 }

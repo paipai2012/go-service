@@ -14,9 +14,9 @@ type UserDao struct {
 // 添加用户
 func (ud *UserDao) InsertUser(userInfo *model.UserInfo) (int64, error) {
 	result, err := ud.DbEngine.InsertOne(userInfo)
-	fmt.Println(result, err)
+	log.Println(result, err)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 	return result, err
 }
