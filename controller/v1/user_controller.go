@@ -1,9 +1,7 @@
 package controller
 
 import (
-	"context"
 	"moose-go/common"
-	"moose-go/engine"
 	"moose-go/service"
 
 	"github.com/gin-gonic/gin"
@@ -12,13 +10,7 @@ import (
 type UserController struct {
 }
 
-var ctx = context.Background()
-
-var redisHelper *engine.RedisHelper
-
 func (uc *UserController) RegisterRouter(app *gin.Engine) {
-	redisHelper = engine.GetRedisHelper()
-
 	group := app.Group("/api/v1/user")
 	group.POST("/add", uc.AddUser)
 	group.GET("/info", uc.Info)

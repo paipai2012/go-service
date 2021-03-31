@@ -17,7 +17,7 @@ type UserService struct {
 
 func (us *UserService) AddUser(userName string) {
 	if userName == "test" {
-		log.Panic(api.NewException(api.AddUserFail))
+		log.Panic(api.NewException(api.AddUserFailCode))
 		return
 	}
 	userInfo := model.UserInfo{
@@ -36,7 +36,7 @@ func (us *UserService) AddUser(userName string) {
 	_, err := userDao.InsertUser(&userInfo)
 	log.Print(err)
 	if err != nil {
-		log.Panic(api.NewException(api.AddUserFail))
+		log.Panic(api.NewException(api.AddUserFailCode))
 	}
 }
 

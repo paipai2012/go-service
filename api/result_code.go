@@ -1,17 +1,25 @@
 package api
 
 const (
-	AddUserFail = 10001
+	AddUserFailCode = 10001
 
-	QRCodeRetry   = 20001
-	QRCodeGetFail = 30002
+	QRCodeRetryCode   = 20001
+	QRCodeGetFailCode = 20002
+
+	PasswordInconsistencyCode = 30001
+
+	ParseParamCode = -10001
 )
 
 var resultCodeText = map[int]string{
-	AddUserFail: "添加用户失败",
+	AddUserFailCode: "添加用户失败",
 
-	QRCodeRetry:   "重新获取二维码",
-	QRCodeGetFail: "获取二维码失败",
+	QRCodeRetryCode:   "重新获取二维码",
+	QRCodeGetFailCode: "获取二维码失败",
+
+	PasswordInconsistencyCode: "密码不一致",
+
+	ParseParamCode: "参数解析错误",
 }
 
 func StatusText(code int) (string, bool) {
