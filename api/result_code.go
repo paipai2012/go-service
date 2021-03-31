@@ -1,7 +1,10 @@
 package api
 
 const (
-	AddUserFailCode = 10001
+	AddUserFailCode   = 10001
+	PhoneExistCode    = 10002
+	UserNameExistCode = 10003
+	QueryUserFail     = 10004
 
 	QRCodeRetryCode   = 20001
 	QRCodeGetFailCode = 20002
@@ -12,7 +15,10 @@ const (
 )
 
 var resultCodeText = map[int]string{
-	AddUserFailCode: "添加用户失败",
+	AddUserFailCode:   "添加用户失败",
+	PhoneExistCode:    "手机号码已存在",
+	UserNameExistCode: "用户名已存在",
+	QueryUserFail:     "获取用户信息失败",
 
 	QRCodeRetryCode:   "重新获取二维码",
 	QRCodeGetFailCode: "获取二维码失败",

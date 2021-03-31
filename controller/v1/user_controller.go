@@ -12,7 +12,6 @@ type UserController struct {
 
 func (uc *UserController) RegisterRouter(app *gin.Engine) {
 	group := app.Group("/api/v1/user")
-	group.POST("/add", uc.AddUser)
 	group.GET("/info", uc.Info)
 	group.GET("/get", uc.GetUser)
 	group.GET("/list", uc.List)
@@ -23,13 +22,6 @@ func (uc *UserController) RegisterRouter(app *gin.Engine) {
 func (uc *UserController) Info(c *gin.Context) {
 	// 江景 -->
 	common.Success(c, "775113183131074580")
-}
-
-func (uc *UserController) AddUser(c *gin.Context) {
-	userName, _ := c.GetQuery("userName")
-	userService := service.UserService{}
-	userService.AddUser(userName)
-	common.Success(c, 1)
 }
 
 func (uc *UserController) GetUser(c *gin.Context) {

@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 )
 
 type Exception struct {
@@ -13,7 +12,7 @@ func NewException(code int) string {
 	e := Exception{Code: code}
 	data, err := json.Marshal(e)
 	if err != nil {
-		log.Panic(err)
+		panic(err)
 	}
 	return string(data)
 }

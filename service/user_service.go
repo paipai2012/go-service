@@ -15,34 +15,13 @@ import (
 type UserService struct {
 }
 
-func (us *UserService) AddUser(userName string) {
-	if userName == "test" {
-		log.Panic(api.NewException(api.AddUserFailCode))
-		return
-	}
-	userInfo := model.UserInfo{
-		UserName:    userName,
-		UserId:      "1",
-		AccountId:   "1",
-		AccountName: "JiangJing",
-		Gender:      "1",
-		Phone:       "15798980298",
-		Avatar:      "https://www.gitee.com/shizidada",
-		Email:       "jiangjing@163,com",
-		Address:     "中国",
-		Description: "我是江景啊",
-	}
+func (us *UserService) GetUserByUserId(userId string) []map[string][]byte {
 	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
-	_, err := userDao.InsertUser(&userInfo)
-	log.Print(err)
+	result, err := userDao.QueryByUserId(userId)
 	if err != nil {
-		log.Panic(api.NewException(api.AddUserFailCode))
+		panic(api.NewException(api.QueryUserFail))
 	}
-}
-
-func (us *UserService) GetUserByUserId(userId string) *model.UserInfo {
-	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
-	return userDao.QueryByUserId(userId)
+	return result
 }
 
 func (us *UserService) GetAllUser() []*model.UserInfo {

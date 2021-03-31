@@ -5,8 +5,6 @@ import "encoding/json"
 type UserInfo struct {
 	UserId      string `json:"userId" xorm:"user_id"`
 	UserName    string `json:"userName" xorm:"username"`
-	AccountId   string `json:"accountId" xorm:"account_id"`
-	AccountName string `json:"accountName" xorm:"account_name"`
 	Phone       string `json:"phone" xorm:"phone"`
 	Gender      string `json:"gender" xorm:"gender"`
 	Email       string `json:"email" xorm:"email"`

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"moose-go/api"
 	"moose-go/common"
 	"moose-go/model"
@@ -11,25 +12,21 @@ import (
 
 type AccountController struct{}
 
-func init() {
-}
-
 func (ac *AccountController) RegisterRouter(app *gin.Engine) {
 	group := app.Group("/api/v1/account")
-	group.POST("/regist", ac.Regist)
+	group.POST("/register", ac.Register)
 	group.POST("/login", ac.Login)
 }
 
-func (ac *AccountController) Regist(c *gin.Context) {
-	var registParam model.RegistParam
-	if err := c.BindJSON(&registParam); err != nil {
+func (ac *AccountController) Register(c *gin.Context) {
+	var registerInfo model.RegisterInfo
+	if err := c.BindJSON(&registerInfo); err != nil {
 		common.Failed(c, api.ParseParamCode, err.Error())
 		return
 	}
-
+	log.Printf("receiver param %s", registerInfo)
 	accountService := service.AccountService{}
-	accountService.Regist(&registParam)
-
+	accountService.AddUser(&registerInfo)
 	common.Success(c, 1)
 }
 
