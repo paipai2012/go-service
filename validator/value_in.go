@@ -24,11 +24,11 @@ func ValueIn(fl validator.FieldLevel) bool {
 	}
 
 	field := fl.Field()
-	valeus := strings.Split(param, " ")
+	values := strings.Split(param, " ")
 
 	// log.Println(field.Interface())
 	// log.Println(field.Kind(), currentField.Kind())
 	// log.Printf("currentKind %v nullable %v found %v", currentKind, nullable, found)
 
-	return in(field.String(), valeus)
+	return in(field.String(), values)
 }

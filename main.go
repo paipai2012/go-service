@@ -70,5 +70,5 @@ func initApp() {
 	defer server.Close()
 	router.InitSocket(app, server)
 
-	app.Run("0.0.0.0:8090")
+	app.Run("0.0.0.0:7000")
 }

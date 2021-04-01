@@ -11,10 +11,10 @@ type QRCodeController struct {
 }
 
 func (qrc *QRCodeController) RegisterRouter(app *gin.Engine) {
-	group := app.Group("/qrcode")
+	group := app.Group("/api/v1/qrcode/")
 	group.GET("/get", qrc.GetQRCode)
 	group.GET("/ask", qrc.AskQRCode)
-	group.GET("/sanlogin", qrc.ScanLogin)
+	group.POST("/sanlogin", qrc.ScanLogin)
 }
 
 func (qrc *QRCodeController) GetQRCode(c *gin.Context) {

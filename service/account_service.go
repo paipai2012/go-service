@@ -63,7 +63,7 @@ func (as *AccountService) Login(loginInfo *model.LoginInfo) {
 		checkLoginInfo(loginInfo)
 		loginWithPassword(loginInfo)
 		return
-	} else if loginType == "sms_code" {
+	} else if loginType == "sms" {
 		loginWithSmsCode(loginInfo)
 		return
 	}

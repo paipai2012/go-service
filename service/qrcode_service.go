@@ -22,7 +22,7 @@ var ctx = context.Background()
 
 func (qrs *QRCodeService) GenerateQRCode(c *gin.Context) *model.QRCodeInfo {
 	mTicket := uuid.NewV4().String()
-	qrCodeUrl := fmt.Sprintf("http://192.168.1.100:8090/qrcode/sanlogin?m_ticket=%s", mTicket)
+	qrCodeUrl := fmt.Sprintf("http://192.168.1.100:7000/api/v1/qrcode/sanlogin?m_ticket=%s", mTicket)
 
 	// result, err := _redisHelper.SetNX(ctx, constant.MOOSE_TICKET, mTicket, 3*time.Minute).Result()
 	redisHelper := engine.GetRedisHelper()
@@ -102,7 +102,11 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 	}
 
 	authInfo.ScanStatus = 1
-	authInfo.Token = uuid.NewV4().String()
+
+	// mToken := c.Query("token")
+	// if token valid
+	// save to redis
+	// authInfo.Token = uuid.NewV4().String()
 
 	_, err = redisHelper.HMSet(ctx, ticketKey, mTicket, &authInfo).Result()
 	if err != nil {
@@ -121,5 +125,6 @@ func checkTicket(result []interface{}) {
 
 	authStr := result[0]
 	if authStr == nil {
+		panic(api.QRCodeGetFailErr)
 	}
 }
