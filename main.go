@@ -5,10 +5,14 @@ import (
 	"log"
 	"moose-go/engine"
 	"moose-go/middleware"
+	"moose-go/middleware/recover"
 	"moose-go/router"
 	"moose-go/util"
+	mv "moose-go/validator"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 
 	socketio "github.com/googollee/go-socket.io"
 )
@@ -46,10 +50,15 @@ func initApp() {
 	app := gin.Default()
 
 	// 使用中间件
-	app.Use(middleware.CatchError())
+	app.Use(recover.Recover())
 	app.Use(middleware.AuthRequired())
 
 	router.InitRouter(app)
+
+	// 绑定验证器
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("valuein", mv.ValueIn)
+	}
 
 	// init socket io
 	server, err := socketio.NewServer(nil)

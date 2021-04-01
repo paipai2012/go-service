@@ -31,7 +31,7 @@ func (qrs *QRCodeService) GenerateQRCode(c *gin.Context) *model.QRCodeInfo {
 	_, err := redisHelper.HMSet(ctx, ticketKey, mTicket, authInfo).Result()
 	if err != nil {
 		log.Println(err)
-		api.NewException(api.QRCodeGetFailCode)
+		panic(api.QRCodeGetFailErr)
 	}
 	// 设置过期时间，三分钟
 	redisHelper.Expire(ctx, ticketKey, 3*time.Minute)
@@ -50,7 +50,7 @@ func (qrs *QRCodeService) AskQRCode(c *gin.Context) *model.AuthInfo {
 
 	if err != nil {
 		log.Println(err)
-		api.NewException(api.QRCodeRetryCode)
+		panic(api.QRCodeRetryErr)
 	}
 
 	redisHelper := engine.GetRedisHelper()
@@ -58,7 +58,7 @@ func (qrs *QRCodeService) AskQRCode(c *gin.Context) *model.AuthInfo {
 	result, err := redisHelper.HMGet(ctx, ticketKey, mTicket).Result()
 
 	if err != nil {
-		api.NewException(api.QRCodeRetryCode)
+		panic(api.QRCodeRetryErr)
 	}
 
 	// 检查 ticket
@@ -79,7 +79,7 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 	mTicket := c.Query("m_ticket")
 	// 校验 m_ticket
 	if mTicket == "" {
-		api.NewException(api.QRCodeRetryCode)
+		panic(api.QRCodeRetryErr)
 	}
 
 	redisHelper := engine.GetRedisHelper()
@@ -88,7 +88,7 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
-		api.NewException(api.QRCodeRetryCode)
+		panic(api.QRCodeRetryErr)
 	}
 
 	// 检查 ticket
@@ -97,7 +97,8 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 	var authInfo model.AuthInfo
 	err = json.Unmarshal([]byte(result[0].(string)), &authInfo)
 	if err != nil {
-		api.NewException(api.QRCodeRetryCode)
+		log.Println(err)
+		panic(api.QRCodeRetryErr)
 	}
 
 	authInfo.ScanStatus = 1
@@ -106,7 +107,7 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 	_, err = redisHelper.HMSet(ctx, ticketKey, mTicket, &authInfo).Result()
 	if err != nil {
 		log.Println(err)
-		api.NewException(api.QRCodeGetFailCode)
+		panic(api.QRCodeGetFailErr)
 	}
 	// 设置过期时间，三分钟
 	redisHelper.Expire(ctx, ticketKey, 3*time.Minute).Result()
@@ -115,7 +116,7 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 
 func checkTicket(result []interface{}) {
 	if len(result) <= 0 {
-		api.NewException(api.QRCodeGetFailCode)
+		panic(api.QRCodeGetFailErr)
 	}
 
 	authStr := result[0]

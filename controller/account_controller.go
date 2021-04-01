@@ -21,17 +21,22 @@ func (ac *AccountController) RegisterRouter(app *gin.Engine) {
 func (ac *AccountController) Register(c *gin.Context) {
 	var registerInfo model.RegisterInfo
 	if err := c.BindJSON(&registerInfo); err != nil {
-		common.Failed(c, api.ParseParamCode, err.Error())
-		return
+		log.Println(err.Error())
+		panic(api.ErrParam.WithErrMsg(err.Error()))
 	}
 	log.Printf("receiver param %s", registerInfo)
 	accountService := service.AccountService{}
-	accountService.AddUser(&registerInfo)
+	accountService.Register(&registerInfo)
 	common.Success(c, 1)
 }
 
 func (ac *AccountController) Login(c *gin.Context) {
-
-	// c.ShouldBindJSON()
+	var loginInfo model.LoginInfo
+	if err := c.BindJSON(&loginInfo); err != nil {
+		log.Println(err.Error())
+		panic(api.ErrParam.WithErrMsg(err.Error()))
+	}
+	accountService := service.AccountService{}
+	accountService.Login(&loginInfo)
 	common.Success(c, 1)
 }

@@ -19,14 +19,17 @@ func (us *UserService) GetUserByUserId(userId string) []map[string][]byte {
 	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
 	result, err := userDao.QueryByUserId(userId)
 	if err != nil {
-		panic(api.NewException(api.QueryUserFail))
+		panic(api.QueryUserFailErr)
 	}
 	return result
 }
 
 func (us *UserService) GetAllUser() []*model.UserInfo {
 	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
-	rows := userDao.QueryUserList()
+	rows, err := userDao.QueryUserList()
+	if err != nil {
+		panic(api.QueryUserFailErr)
+	}
 	// []map[string][]byte
 	list := make([]*model.UserInfo, len(rows))
 	for index, value := range rows {

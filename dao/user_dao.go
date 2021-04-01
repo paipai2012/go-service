@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"log"
 	"moose-go/engine"
 	"moose-go/model"
 )
@@ -17,6 +16,11 @@ func (ud *UserDao) InsertUser(userInfo *model.UserInfo) (int64, error) {
 
 func (ud *UserDao) InsertPassword(password *model.Password) (int64, error) {
 	return ud.DbEngine.InsertOne(password)
+}
+
+func (ud *UserDao) QueryUserIdByUserName(userName string) ([]map[string][]byte, error) {
+	sql := "select user_id from t_user_info where username = ? "
+	return ud.DbEngine.Query(sql, userName)
 }
 
 func (ud *UserDao) QueryByUserId(userId string) ([]map[string][]byte, error) {
@@ -41,11 +45,6 @@ func (ud *UserDao) QueryByUserName(userName string) (bool, error) {
 }
 
 // 查询用户列表
-func (ud *UserDao) QueryUserList() []map[string][]byte {
-	rows, err := ud.DbEngine.Query("select * from t_user_info limit 0, 10")
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	return rows
+func (ud *UserDao) QueryUserList() ([]map[string][]byte, error) {
+	return ud.DbEngine.Query("select * from t_user_info limit 0, 10")
 }

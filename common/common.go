@@ -1,6 +1,8 @@
 package common
 
 import (
+	"fmt"
+	"moose-go/api"
 	"net/http"
 	"time"
 
@@ -15,11 +17,14 @@ func Success(c *gin.Context, data interface{}) {
 	})
 }
 
-func Failed(c *gin.Context, code int, message string) {
-	c.JSON(http.StatusOK, gin.H{
-		"code":    code,
-		"message": message,
-	})
+func Failed(c *gin.Context, e *api.Exception) {
+	var err = gin.H{}
+	err["code"] = e.Code
+	err["message"] = e.Message
+	if e.ErrMsg != nil {
+		err["errMsg"] = fmt.Sprintf("%v", e.ErrMsg)
+	}
+	c.JSON(http.StatusOK, err)
 }
 
 func Unauthorized(c *gin.Context) {
