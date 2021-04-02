@@ -6,6 +6,7 @@ import (
 	"moose-go/dao"
 	"moose-go/engine"
 	"moose-go/model"
+	"moose-go/service"
 	"moose-go/util"
 	"strconv"
 	"strings"
@@ -70,6 +71,21 @@ func (as *AccountService) Login(loginInfo *model.LoginInfo) string {
 
 // login width sms code
 func loginWithSmsCode(loginInfo *model.LoginInfo) string {
+
+	mobile := loginInfo.Mobile
+
+	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
+	exist, err := userDao.QueryByPhone(loginInfo.Mobile)
+	if err != nil || !exist {
+		panic(api.PhoneNumberErr)
+	}
+
+	smsCode := loginInfo.SmsCode
+	loginType := loginInfo.LoginType
+
+	smsService := service.SenderMessageService{}
+	smsService.CheckSms(loginType, smsCode, mobile)
+
 	return ""
 }
 
@@ -108,13 +124,19 @@ func loginWithPassword(loginInfo *model.LoginInfo) string {
 		// log.Println(pwd, " \n ", encodePwd)
 		panic(api.UserNameOrPasswordErr)
 	}
-	token, err := util.GeneratorJwt(&model.UserInfo{UserId: userId})
+	return createToken(&model.UserInfo{UserId: userId})
+}
+
+// cerate jwt tokn
+func createToken(userInfo *model.UserInfo) string {
+	token, err := util.GeneratorJwt(userInfo)
 	if err != nil {
 		panic(api.JwtGeneratorErr)
 	}
 	return token
 }
 
+// check login info
 func checkLoginInfo(loginInfo *model.LoginInfo) {
 	loginType := loginInfo.LoginType
 
@@ -140,6 +162,7 @@ func checkLoginInfo(loginInfo *model.LoginInfo) {
 	}
 }
 
+// check register info
 func checkRegisterInfo(registerInfo *model.RegisterInfo) {
 	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
 	exist, err := userDao.QueryByPhone(registerInfo.Phone)

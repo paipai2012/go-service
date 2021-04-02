@@ -14,6 +14,7 @@ var anonymous = []string{
 	"/api/v1/account/login",
 	"/api/v1/qrcode/get",
 	"/api/v1/qrcode/ask",
+	"/api/v1/sms/send",
 }
 
 func AuthRequired() gin.HandlerFunc {

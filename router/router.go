@@ -13,6 +13,7 @@ func InitRouter(app *gin.Engine) {
 	// new(v1.UserController).RegisterRouter(app)
 	new(controller.AccountController).RegisterRouter(app)
 	new(controller.QRCodeController).RegisterRouter(app)
+	new(controller.SmsController).RegisterRouter(app)
 }
 
 func InitSocket(app *gin.Engine, socket *socketio.Server) {
