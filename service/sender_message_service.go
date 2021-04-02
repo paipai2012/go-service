@@ -21,7 +21,7 @@ func (sms SenderMessageService) Send(s *model.Sms) {
 	redisHelper := engine.GetRedisHelper()
 	result, err := redisHelper.Set(context.Background(), smsKey, number, 5*time.Minute).Result()
 	if err != nil {
-		panic(api.SmdCodeSendErr.WithErrMsg(err.Error()))
+		panic(api.SmsCodeSendErr)
 	}
 	log.Println("发送短信验证码成功", result, number)
 }
@@ -29,9 +29,9 @@ func (sms SenderMessageService) Send(s *model.Sms) {
 func (sms SenderMessageService) CheckSms(s *model.Sms) string {
 	smsKey := fmt.Sprintf(constant.MOOSE_SMS, s.SmsType, s.Mobile)
 	redisHelper := engine.GetRedisHelper()
-	result, err := redisHelper.Get(context.Background(), smsKey).Result()
+	smsCode, err := redisHelper.Get(context.Background(), smsKey).Result()
 	if err != nil {
-		panic(api.SmdCodeErr.WithErrMsg(err.Error()))
+		panic(api.SmsCodeErr)
 	}
-	return result
+	return smsCode
 }

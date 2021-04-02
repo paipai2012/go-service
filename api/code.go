@@ -18,9 +18,9 @@ var (
 	PhoneEmptyErr  = NewException(20102, "手机号码不能为空")
 	PhoneNumberErr = NewException(20103, "手机号码错误")
 
-	SmdCodeEmptyErr = NewException(20201, "短信验证码不能为空")
-	SmdCodeSendErr  = NewException(20202, "短信验证码发送失败")
-	SmdCodeErr      = NewException(20203, "短信验证码错误")
+	SmsCodeEmptyErr = NewException(20201, "短信验证码不能为空")
+	SmsCodeSendErr  = NewException(20202, "短信验证码发送失败")
+	SmsCodeErr      = NewException(20203, "短信验证码错误")
 
 	PasswordEmptyErr = NewException(20302, "密码不能为空")
 	PasswordErr      = NewException(20403, "两次密码不一致")

@@ -23,6 +23,11 @@ func (ud *UserDao) QueryUserIdByUserName(userName string) ([]map[string][]byte, 
 	return ud.DbEngine.Query(sql, userName)
 }
 
+func (ud *UserDao) QueryUserIdByPhone(phone string) ([]map[string][]byte, error) {
+	sql := "select user_id from t_user_info where phone = ? "
+	return ud.DbEngine.Query(sql, phone)
+}
+
 func (ud *UserDao) QueryByUserId(userId string) ([]map[string][]byte, error) {
 	userInfo := model.UserInfo{
 		UserId: userId,

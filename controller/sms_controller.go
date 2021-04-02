@@ -14,7 +14,7 @@ type SmsController struct{}
 
 func (sc *SmsController) RegisterRouter(app *gin.Engine) {
 	group := app.Group("/api/v1/sms/")
-	group.GET("/send", sc.send)
+	group.POST("/send", sc.send)
 }
 
 func (sc *SmsController) send(c *gin.Context) {

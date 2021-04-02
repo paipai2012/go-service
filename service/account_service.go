@@ -6,7 +6,6 @@ import (
 	"moose-go/dao"
 	"moose-go/engine"
 	"moose-go/model"
-	"moose-go/service"
 	"moose-go/util"
 	"strconv"
 	"strings"
@@ -73,20 +72,35 @@ func (as *AccountService) Login(loginInfo *model.LoginInfo) string {
 func loginWithSmsCode(loginInfo *model.LoginInfo) string {
 
 	mobile := loginInfo.Mobile
-
-	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
-	exist, err := userDao.QueryByPhone(loginInfo.Mobile)
-	if err != nil || !exist {
-		panic(api.PhoneNumberErr)
+	if mobile == "" {
+		panic(api.PhoneEmptyErr)
 	}
 
 	smsCode := loginInfo.SmsCode
-	loginType := loginInfo.LoginType
+	if smsCode == "" {
+		panic(api.SmsCodeEmptyErr)
+	}
 
-	smsService := service.SenderMessageService{}
-	smsService.CheckSms(loginType, smsCode, mobile)
+	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
+	userResult, userErr := userDao.QueryUserIdByPhone(mobile)
+	if userErr != nil {
+		panic(api.PhoneNumberErr)
+	}
+	if len(userResult) == 0 {
+		log.Println(userResult)
+		panic(api.PhoneNumberErr)
+	}
 
-	return ""
+	smsService := &SenderMessageService{}
+	sms := &model.Sms{SmsType: "login", Mobile: mobile}
+	saveSmsCode := smsService.CheckSms(sms)
+
+	if !strings.EqualFold(smsCode, saveSmsCode) {
+		panic(api.SmsCodeErr)
+	}
+
+	userId := string(userResult[0]["user_id"])
+	return createToken(&model.UserInfo{UserId: userId})
 }
 
 // login with password
@@ -157,7 +171,7 @@ func checkLoginInfo(loginInfo *model.LoginInfo) {
 		}
 		smsCode := loginInfo.SmsCode
 		if smsCode == "" {
-			panic(api.SmdCodeEmptyErr)
+			panic(api.SmsCodeEmptyErr)
 		}
 	}
 }
