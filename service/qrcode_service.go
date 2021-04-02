@@ -36,7 +36,7 @@ func (qrs *QRCodeService) GenerateQRCode(c *gin.Context) *model.QRCodeInfo {
 	// 设置过期时间，三分钟
 	redisHelper.Expire(ctx, ticketKey, 3*time.Minute)
 
-	c.SetCookie("m_ticket", mTicket, 3*60, "/", "http://localhost:8090", true, true)
+	c.SetCookie("m_ticket", mTicket, 3*60, "/", "localhost", true, true)
 
 	qrCodeInfo := &model.QRCodeInfo{
 		CodeUrl: qrCodeUrl,
@@ -101,12 +101,13 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 		panic(api.QRCodeRetryErr)
 	}
 
-	authInfo.ScanStatus = 1
+	authInfo.Status = 1
 
-	// mToken := c.Query("token")
-	// if token valid
-	// save to redis
-	// authInfo.Token = uuid.NewV4().String()
+	mToken := c.Query("token")
+	// if token valid success
+	if mToken != "" {
+		authInfo.Token = mToken
+	}
 
 	_, err = redisHelper.HMSet(ctx, ticketKey, mTicket, &authInfo).Result()
 	if err != nil {

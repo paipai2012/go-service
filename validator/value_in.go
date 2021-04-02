@@ -1,20 +1,11 @@
 package validator
 
 import (
-	"sort"
+	"moose-go/util"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
-
-func in(target string, arr []string) bool {
-	sort.Strings(arr)
-	index := sort.SearchStrings(arr, target)
-	if index < len(arr) && arr[index] == target {
-		return true
-	}
-	return false
-}
 
 func ValueIn(fl validator.FieldLevel) bool {
 
@@ -30,5 +21,5 @@ func ValueIn(fl validator.FieldLevel) bool {
 	// log.Println(field.Kind(), currentField.Kind())
 	// log.Printf("currentKind %v nullable %v found %v", currentKind, nullable, found)
 
-	return in(field.String(), values)
+	return util.In(field.String(), values)
 }

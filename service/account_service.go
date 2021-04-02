@@ -19,7 +19,7 @@ func (us *AccountService) Register(registerInfo *model.RegisterInfo) {
 	worker, err := util.NewWorker(16)
 	if err != nil {
 		log.Print(err)
-		panic(api.AddUserFailErr)
+		panic(api.UserAddFailErr)
 	}
 
 	// check user info
@@ -40,7 +40,7 @@ func (us *AccountService) Register(registerInfo *model.RegisterInfo) {
 	result, err := userDao.InsertUser(userInfo)
 	log.Printf("add user result %v error %v", result, err)
 	if err != nil {
-		panic(api.AddUserFailErr.WithErrMsg(err))
+		panic(api.UserAddFailErr.WithErrMsg(err))
 	}
 
 	passwordInfo := &model.Password{
@@ -51,32 +51,30 @@ func (us *AccountService) Register(registerInfo *model.RegisterInfo) {
 	result, err = userDao.InsertPassword(passwordInfo)
 	log.Printf("add password result %v error %v", result, err)
 	if err != nil {
-		panic(api.AddUserFailErr)
+		panic(api.UserAddFailErr)
 	}
 }
 
-func (as *AccountService) Login(loginInfo *model.LoginInfo) {
+func (as *AccountService) Login(loginInfo *model.LoginInfo) string {
 
 	loginType := loginInfo.LoginType
 	if loginType == "password" {
 		// check user info
 		checkLoginInfo(loginInfo)
-		loginWithPassword(loginInfo)
-		return
+		return loginWithPassword(loginInfo)
 	} else if loginType == "sms" {
-		loginWithSmsCode(loginInfo)
-		return
+		return loginWithSmsCode(loginInfo)
 	}
 	panic(api.LoginTypeErr)
 }
 
 // login width sms code
-func loginWithSmsCode(loginInfo *model.LoginInfo) {
-
+func loginWithSmsCode(loginInfo *model.LoginInfo) string {
+	return ""
 }
 
 // login with password
-func loginWithPassword(loginInfo *model.LoginInfo) {
+func loginWithPassword(loginInfo *model.LoginInfo) string {
 
 	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
 	userResult, userErr := userDao.QueryUserIdByUserName(loginInfo.UserName)
@@ -110,6 +108,11 @@ func loginWithPassword(loginInfo *model.LoginInfo) {
 		// log.Println(pwd, " \n ", encodePwd)
 		panic(api.UserNameOrPasswordErr)
 	}
+	token, err := util.GeneratorJwt(&model.UserInfo{UserId: userId})
+	if err != nil {
+		panic(api.JwtGeneratorErr)
+	}
+	return token
 }
 
 func checkLoginInfo(loginInfo *model.LoginInfo) {

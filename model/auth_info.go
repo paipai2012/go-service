@@ -3,8 +3,8 @@ package model
 import "encoding/json"
 
 type AuthInfo struct {
-	Token      string `json:"token"`
-	ScanStatus int    `json:"status"`
+	Token  string `json:"token"`
+	Status int    `json:"status"`
 }
 
 func (u *AuthInfo) MarshalBinary() ([]byte, error) {

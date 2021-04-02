@@ -37,6 +37,5 @@ func (ac *AccountController) Login(c *gin.Context) {
 		panic(api.ErrParam.WithErrMsg(err.Error()))
 	}
 	accountService := service.AccountService{}
-	accountService.Login(&loginInfo)
-	common.Success(c, 1)
+	common.Success(c, accountService.Login(&loginInfo))
 }
