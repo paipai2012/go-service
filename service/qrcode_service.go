@@ -27,14 +27,13 @@ func (qrs *QRCodeService) GenerateQRCode(c *gin.Context) *model.QRCodeInfo {
 	// result, err := _redisHelper.SetNX(ctx, constant.MOOSE_TICKET, mTicket, 3*time.Minute).Result()
 	redisHelper := engine.GetRedisHelper()
 	ticketKey := fmt.Sprintf(constant.MOOSE_SCAN_TICKET, mTicket)
-	authInfo := &model.AuthInfo{Token: "", ScanStatus: 0}
-	_, err := redisHelper.HMSet(ctx, ticketKey, mTicket, authInfo).Result()
+	authInfo := &model.AuthInfo{Token: "", Status: 0}
+	// 设置过期时间，三分钟
+	_, err := redisHelper.Set(ctx, ticketKey, authInfo, 3*time.Minute).Result()
 	if err != nil {
 		log.Println(err)
 		panic(api.QRCodeGetFailErr)
 	}
-	// 设置过期时间，三分钟
-	redisHelper.Expire(ctx, ticketKey, 3*time.Minute)
 
 	c.SetCookie("m_ticket", mTicket, 3*60, "/", "localhost", true, true)
 
@@ -55,7 +54,7 @@ func (qrs *QRCodeService) AskQRCode(c *gin.Context) *model.AuthInfo {
 
 	redisHelper := engine.GetRedisHelper()
 	ticketKey := fmt.Sprintf(constant.MOOSE_SCAN_TICKET, mTicket)
-	result, err := redisHelper.HMGet(ctx, ticketKey, mTicket).Result()
+	result, err := redisHelper.Get(ctx, ticketKey).Result()
 
 	if err != nil {
 		panic(api.QRCodeRetryErr)
@@ -65,8 +64,14 @@ func (qrs *QRCodeService) AskQRCode(c *gin.Context) *model.AuthInfo {
 	checkTicket(result)
 
 	var authInfo model.AuthInfo
-	json.Unmarshal([]byte(result[0].(string)), &authInfo)
-	log.Printf("key %s result %s %s", ticketKey, result, result[0].(string))
+	json.Unmarshal([]byte(result), &authInfo)
+
+	// 扫描 token 不为空，返回之后，设置过期，在 redis Expire
+	if authInfo.Token != "" {
+		redisHelper.Expire(ctx, ticketKey, 0)
+	}
+
+	log.Printf("ticketKey %s result %s ", ticketKey, result)
 	return &authInfo
 }
 
@@ -84,7 +89,7 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 
 	redisHelper := engine.GetRedisHelper()
 	ticketKey := fmt.Sprintf(constant.MOOSE_SCAN_TICKET, mTicket)
-	result, err := redisHelper.HMGet(ctx, ticketKey, mTicket).Result()
+	result, err := redisHelper.Get(ctx, ticketKey).Result()
 
 	if err != nil {
 		log.Println(err)
@@ -95,7 +100,7 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 	checkTicket(result)
 
 	var authInfo model.AuthInfo
-	err = json.Unmarshal([]byte(result[0].(string)), &authInfo)
+	err = json.Unmarshal([]byte(result), &authInfo)
 	if err != nil {
 		log.Println(err)
 		panic(api.QRCodeRetryErr)
@@ -109,23 +114,22 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 		authInfo.Token = mToken
 	}
 
-	_, err = redisHelper.HMSet(ctx, ticketKey, mTicket, &authInfo).Result()
+	_, err = redisHelper.Set(ctx, ticketKey, &authInfo, 3*time.Minute).Result()
 	if err != nil {
 		log.Println(err)
 		panic(api.QRCodeGetFailErr)
 	}
 	// 设置过期时间，三分钟
-	redisHelper.Expire(ctx, ticketKey, 3*time.Minute).Result()
+	// redisHelper.Expire(ctx, ticketKey, 3*time.Minute).Result()
 	log.Printf("key %s result %s", ticketKey, result)
 }
 
-func checkTicket(result []interface{}) {
+func checkTicket(result string) {
 	if len(result) <= 0 {
-		panic(api.QRCodeGetFailErr)
+		panic(api.QRCodeRetryErr)
 	}
 
-	authStr := result[0]
-	if authStr == nil {
-		panic(api.QRCodeGetFailErr)
+	if result == "" {
+		panic(api.QRCodeRetryErr)
 	}
 }
