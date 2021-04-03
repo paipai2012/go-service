@@ -15,6 +15,18 @@ type UserInfo struct {
 	UpdateTime  string `json:"updateTime" xorm:"<- update_time"`
 }
 
+func (u *UserInfo) NewUser(userId, userName, phone, gender, email, address, description string) *UserInfo {
+	return &UserInfo{
+		UserId:      userId,
+		UserName:    userName,
+		Phone:       phone,
+		Gender:      gender,
+		Email:       email,
+		Address:     address,
+		Description: description,
+	}
+}
+
 func (u *UserInfo) MarshalBinary() ([]byte, error) {
 	return json.Marshal(u)
 }

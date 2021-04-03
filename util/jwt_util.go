@@ -5,6 +5,7 @@ import (
 	"log"
 	"moose-go/api"
 	"moose-go/model"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -45,8 +46,10 @@ func ParseJwt(tokenStr string) *jwt.Token {
 		return token
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
+			log.Printf("%v", ve)
 			panic(api.JwtValidationErr)
 		} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
+			log.Printf("%v", ve)
 			panic(api.JwtExpiresErr)
 		} else {
 			panic(api.JwtExpiresErr)
@@ -54,4 +57,12 @@ func ParseJwt(tokenStr string) *jwt.Token {
 	} else {
 		panic(api.JwtExpiresErr)
 	}
+}
+
+func ParseBearerToken(token string) string {
+	tokens := strings.Split(token, " ")
+	if len(tokens) != 2 || !strings.EqualFold("Bearer", tokens[0]) {
+		panic(api.JwtValidationErr)
+	}
+	return tokens[1]
 }

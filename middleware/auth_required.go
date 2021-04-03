@@ -4,7 +4,6 @@ import (
 	"log"
 	"moose-go/api"
 	"moose-go/util"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +14,7 @@ var anonymous = []string{
 	"/api/v1/qrcode/get",
 	"/api/v1/qrcode/ask",
 	"/api/v1/sms/send",
+	"/api/v1/user/info",
 }
 
 func AuthRequired() gin.HandlerFunc {
@@ -25,19 +25,16 @@ func AuthRequired() gin.HandlerFunc {
 			return
 		}
 
-		token := c.GetHeader("Authorization")
-		log.Println("auth check token... ", token)
+		bearerToken := c.GetHeader("Authorization")
+		log.Println("auth check token... ", bearerToken)
 
-		if token == "" {
+		if bearerToken == "" {
 			panic(api.JwtValidationErr)
 		}
 
 		// Bearer xxxx
-		tokens := strings.Split(token, " ")
-		if len(tokens) != 2 || !strings.EqualFold("Bearer", tokens[0]) {
-			panic(api.JwtValidationErr)
-		}
-		util.ParseJwt(tokens[1])
+		token := util.ParseBearerToken(bearerToken)
+		util.ParseJwt(token)
 		c.Next()
 	}
 }

@@ -20,8 +20,9 @@ func (uc *UserController) RegisterRouter(app *gin.Engine) {
 }
 
 func (uc *UserController) Info(c *gin.Context) {
-	// 江景 -->
-	common.Success(c, "775113183131074580")
+	bearerToken := c.GetHeader("Authorization")
+	userService := service.UserService{}
+	common.Success(c, userService.GetUserByToken(bearerToken))
 }
 
 func (uc *UserController) GetUser(c *gin.Context) {

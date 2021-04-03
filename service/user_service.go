@@ -2,13 +2,16 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"moose-go/api"
 	"moose-go/dao"
 	"moose-go/engine"
 	"moose-go/model"
+	"moose-go/util"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -65,6 +68,38 @@ func (uc *UserService) GetCacheUser(c *gin.Context) *model.UserInfo {
 
 	var userInfo model.UserInfo
 	json.Unmarshal([]byte(name), &userInfo)
+	return &userInfo
+}
+
+func (uc *UserService) GetUserByToken(header string) *model.UserInfo {
+	token := util.ParseBearerToken(header)
+	jwtToken := util.ParseJwt(token)
+	data, err := json.Marshal(jwtToken.Claims)
+	if err != nil {
+		panic(api.QueryUserFailErr)
+	}
+
+	var claims jwt.MapClaims
+	err = json.Unmarshal(data, &claims)
+	if err != nil {
+		panic(api.QueryUserFailErr)
+	}
+
+	userId, ok := claims["userId"]
+	if userId == "" || !ok {
+		panic(api.QueryUserFailErr)
+	}
+
+	result := uc.GetUserByUserId(fmt.Sprintf("%s", userId))
+	userInfo := model.UserInfo{
+		UserId:   string(result[0]["user_id"]),
+		UserName: string(result[0]["username"]),
+		Phone:    string(result[0]["phone"]),
+		Avatar:   string(result[0]["avatar"]),
+		Gender:   string(result[0]["gender"]),
+		Address:  string(result[0]["address"]),
+		Email:    string(result[0]["email"]),
+	}
 	return &userInfo
 }
 
