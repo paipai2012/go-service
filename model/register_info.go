@@ -6,7 +6,7 @@ type RegisterInfo struct {
 	RePassword  string `form:"rePassword" json:"rePassword" binding:"required,eqfield=Password"`
 	Phone       string `form:"phone" json:"phone" binding:"required"`
 	SmsCode     string `form:"smsCode" json:"smsCode" binding:"required"`
-	Gender      string `form:"gender" json:"gender"`
+	Gender      string `form:"gender" json:"gender" binding:"required"`
 	Avatar      string `form:"avatar" json:"avatar"`
 	Email       string `form:"email" json:"email" binding:"omitempty,email"`
 	Job         string `form:"job" json:"job"`

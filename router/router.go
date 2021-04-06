@@ -1,6 +1,7 @@
 package router
 
 import (
+	"moose-go/common"
 	"moose-go/controller"
 	v1 "moose-go/controller/v1"
 
@@ -14,6 +15,8 @@ func InitRouter(app *gin.Engine) {
 	new(controller.AccountController).RegisterRouter(app)
 	new(controller.QRCodeController).RegisterRouter(app)
 	new(controller.SmsController).RegisterRouter(app)
+
+	app.NoRoute(common.NotFound)
 }
 
 func InitSocket(app *gin.Engine, socket *socketio.Server) {

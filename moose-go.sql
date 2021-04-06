@@ -25,6 +25,7 @@ CREATE TABLE `t_password` (
   `pwd` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '密码',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`pwd_id`),
   UNIQUE KEY `uniq_password_id` (`pwd_id`),
   UNIQUE KEY `uniq_user_id` (`user_id`),
   KEY `t_user_password_ibfk_1` (`user_id`),

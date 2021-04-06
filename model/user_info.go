@@ -3,7 +3,7 @@ package model
 import "encoding/json"
 
 type UserInfo struct {
-	UserId      string `json:"userId" xorm:"user_id"`
+	UserId      string `json:"userId" xorm:"user_id" mapstructure:"user_id"`
 	UserName    string `json:"userName" xorm:"username"`
 	Phone       string `json:"phone" xorm:"phone"`
 	Gender      string `json:"gender" xorm:"gender"`

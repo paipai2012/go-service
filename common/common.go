@@ -34,6 +34,14 @@ func Unauthorized(c *gin.Context) {
 	})
 }
 
+func NotFound(c *gin.Context) {
+	c.JSON(http.StatusNotFound, gin.H{
+		"code":    http.StatusNotFound,
+		"message": "Not Found",
+		"url":     c.Request.URL.Path,
+	})
+}
+
 // 获取当前时间戳
 func GetTimeUnix() int64 {
 	return time.Now().Unix()

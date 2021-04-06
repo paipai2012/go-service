@@ -7,19 +7,19 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type RedisHelper struct {
+type RedisEngine struct {
 	*redis.Client
 }
 
-var redisHelper *RedisHelper
+var redisEngine *RedisEngine
 
 var redisOnce sync.Once
 
-func GetRedisHelper() *RedisHelper {
-	return redisHelper
+func GetRedisEngine() *RedisEngine {
+	return redisEngine
 }
 
-func NewRedisHelper() *redis.Client {
+func NewRedisEngine() {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:         "localhost:6379",
 		Password:     "",
@@ -32,10 +32,8 @@ func NewRedisHelper() *redis.Client {
 	})
 
 	redisOnce.Do(func() {
-		rdh := new(RedisHelper)
+		rdh := new(RedisEngine)
 		rdh.Client = rdb
-		redisHelper = rdh
+		redisEngine = rdh
 	})
-
-	return rdb
 }

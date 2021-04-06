@@ -25,7 +25,7 @@ func (qrs *QRCodeService) GenerateQRCode(c *gin.Context) *model.QRCodeInfo {
 	qrCodeUrl := fmt.Sprintf("http://192.168.1.100:7000/api/v1/qrcode/sanlogin?m_ticket=%s", mTicket)
 
 	// result, err := _redisHelper.SetNX(ctx, constant.MOOSE_TICKET, mTicket, 3*time.Minute).Result()
-	redisHelper := engine.GetRedisHelper()
+	redisHelper := engine.GetRedisEngine()
 	ticketKey := fmt.Sprintf(constant.MOOSE_SCAN_TICKET, mTicket)
 	authInfo := &model.AuthInfo{Token: "", Status: 0}
 	// 设置过期时间，三分钟
@@ -52,7 +52,7 @@ func (qrs *QRCodeService) AskQRCode(c *gin.Context) *model.AuthInfo {
 		panic(api.QRCodeRetryErr)
 	}
 
-	redisHelper := engine.GetRedisHelper()
+	redisHelper := engine.GetRedisEngine()
 	ticketKey := fmt.Sprintf(constant.MOOSE_SCAN_TICKET, mTicket)
 	result, err := redisHelper.Get(ctx, ticketKey).Result()
 
@@ -87,7 +87,7 @@ func (qrs *QRCodeService) ScanLogin(c *gin.Context) {
 		panic(api.QRCodeRetryErr)
 	}
 
-	redisHelper := engine.GetRedisHelper()
+	redisHelper := engine.GetRedisEngine()
 	ticketKey := fmt.Sprintf(constant.MOOSE_SCAN_TICKET, mTicket)
 	result, err := redisHelper.Get(ctx, ticketKey).Result()
 

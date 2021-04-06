@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"log"
 	"moose-go/model"
 	"sync"
 
@@ -23,14 +24,15 @@ func GetOrmEngine() *Orm {
 	return dbEngine
 }
 
-func NewOrmEngine(appInfo *model.AppInfo) (*xorm.Engine, error) {
+func NewOrmEngine(appInfo *model.AppInfo) {
 	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", appInfo.UserName, appInfo.Password, appInfo.Host, appInfo.Port, appInfo.DataBase)
 	engine, err := xorm.NewEngine(appInfo.DriverName, url)
 
-	fmt.Println(appInfo)
+	log.Println(appInfo)
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err.Error())
+		return
 	}
 
 	prefix := names.NewPrefixMapper(names.SnakeMapper{}, "t_")
@@ -51,5 +53,13 @@ func NewOrmEngine(appInfo *model.AppInfo) (*xorm.Engine, error) {
 		dbEngine = orm
 	})
 
-	return engine, nil
+}
+
+func CloseOrmEngine() {
+	if dbEngine == nil {
+		return
+	}
+	if err := dbEngine.Close(); nil != err {
+		log.Printf("Disconnect from database failed: %s", err.Error())
+	}
 }

@@ -49,7 +49,7 @@ func (us *UserService) GetAllUser() []*model.UserInfo {
 }
 
 func (uc *UserService) CacheUser(c *gin.Context) string {
-	redisHelper := engine.GetRedisHelper()
+	redisHelper := engine.GetRedisEngine()
 	userInfo := &model.UserInfo{UserId: "56867897283718"}
 	name, err := redisHelper.Set(ctx, "moose-go", userInfo, 10*time.Minute).Result()
 	if err != nil {
@@ -59,7 +59,7 @@ func (uc *UserService) CacheUser(c *gin.Context) string {
 }
 
 func (uc *UserService) GetCacheUser(c *gin.Context) *model.UserInfo {
-	redisHelper := engine.GetRedisHelper()
+	redisHelper := engine.GetRedisEngine()
 	name, err := redisHelper.Get(ctx, "moose-go").Result()
 	if err != nil {
 		log.Panic(err)
@@ -91,16 +91,17 @@ func (uc *UserService) GetUserByToken(header string) *model.UserInfo {
 	}
 
 	result := uc.GetUserByUserId(fmt.Sprintf("%s", userId))
-	userInfo := model.UserInfo{
-		UserId:   string(result[0]["user_id"]),
-		UserName: string(result[0]["username"]),
-		Phone:    string(result[0]["phone"]),
-		Avatar:   string(result[0]["avatar"]),
-		Gender:   string(result[0]["gender"]),
-		Address:  string(result[0]["address"]),
-		Email:    string(result[0]["email"]),
+	userInfo := &model.UserInfo{
+		UserId:      string(result[0]["user_id"]),
+		UserName:    string(result[0]["username"]),
+		Phone:       string(result[0]["phone"]),
+		Avatar:      string(result[0]["avatar"]),
+		Gender:      string(result[0]["gender"]),
+		Address:     string(result[0]["address"]),
+		Email:       string(result[0]["email"]),
+		Description: string(result[0]["description"]),
 	}
-	return &userInfo
+	return userInfo
 }
 
 // func bytesToInt(bys []byte) int64 {

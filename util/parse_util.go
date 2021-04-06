@@ -13,7 +13,7 @@ func GetConfig() *model.AppInfo {
 	return _cfg
 }
 
-func ParseConfig(path string) (*model.AppInfo, error) {
+func ParseConfig(path string) *model.AppInfo {
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -25,8 +25,10 @@ func ParseConfig(path string) (*model.AppInfo, error) {
 	reader := bufio.NewReader(file)
 	decoder := json.NewDecoder(reader)
 
-	if err = decoder.Decode(&_cfg); err != nil {
-		return nil, err
+	err = decoder.Decode(&_cfg)
+
+	if err != nil {
+		panic(err)
 	}
-	return _cfg, nil
+	return _cfg
 }
