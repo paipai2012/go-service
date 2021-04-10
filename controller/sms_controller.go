@@ -2,7 +2,6 @@ package controller
 
 import (
 	"log"
-	"moose-go/api"
 	"moose-go/common"
 	"moose-go/model"
 	"moose-go/service"
@@ -21,9 +20,10 @@ func (sc *SmsController) send(c *gin.Context) {
 	var sms model.Sms
 	if err := c.BindJSON(&sms); err != nil {
 		log.Println(err.Error())
-		panic(api.ErrParam.WithErrMsg(err.Error()))
+		common.FailedParam(c)
+		return
 	}
+
 	smsService := service.SenderMessageService{}
-	smsService.Send(&sms)
-	common.Success(c, 1)
+	common.JSON(c, smsService.Send(&sms))
 }

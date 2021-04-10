@@ -2,7 +2,6 @@ package util
 
 import (
 	"fmt"
-	"moose-go/model"
 	"testing"
 	"time"
 
@@ -32,10 +31,7 @@ func TestCreateJWT(t *testing.T) {
 			// see http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-20#section-4.1.4
 			ExpiresAt: time.Now().Add(time.Millisecond * 1).Unix(),
 		},
-		&model.UserInfo{
-			UserId:   "123",
-			UserName: "test",
-		},
+		nil,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

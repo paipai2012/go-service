@@ -28,7 +28,7 @@ func (ud *UserDao) QueryUserIdByPhone(phone string) ([]map[string][]byte, error)
 	return ud.DbEngine.Query(sql, phone)
 }
 
-func (ud *UserDao) QueryByUserId(userId string) ([]map[string][]byte, error) {
+func (ud *UserDao) QueryByUserId(userId int64) ([]map[string][]byte, error) {
 	sql := "select user_id, username, phone, gender, avatar, email, job, address, description from t_user_info where user_id = ? "
 	return ud.DbEngine.Query(sql, userId)
 }

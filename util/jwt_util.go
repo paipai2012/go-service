@@ -3,7 +3,6 @@ package util
 import (
 	"fmt"
 	"log"
-	"moose-go/api"
 	"moose-go/model"
 	"strings"
 	"time"
@@ -17,16 +16,16 @@ var verifyKey = []byte("moose-go")
 
 type CustomClaims struct {
 	*jwt.StandardClaims
-	*model.UserInfo
+	*model.Payload
 }
 
-func GeneratorJwt(userInfo *model.UserInfo) (string, error) {
+func GeneratorJwt(payload *model.Payload) (string, error) {
 	claims := &CustomClaims{
 		&jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * 60 * 24).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
-		userInfo,
+		payload,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -47,22 +46,22 @@ func ParseJwt(tokenStr string) *jwt.Token {
 	} else if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 			log.Printf("%v", ve)
-			panic(api.JwtValidationErr)
+			return nil
 		} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
 			log.Printf("%v", ve)
-			panic(api.JwtExpiresErr)
+			return nil
 		} else {
-			panic(api.JwtExpiresErr)
+			return nil
 		}
 	} else {
-		panic(api.JwtExpiresErr)
+		return nil
 	}
 }
 
 func ParseBearerToken(token string) string {
 	tokens := strings.Split(token, " ")
 	if len(tokens) != 2 || !strings.EqualFold("Bearer", tokens[0]) {
-		panic(api.JwtValidationErr)
+		return ""
 	}
 	return tokens[1]
 }

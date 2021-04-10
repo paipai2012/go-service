@@ -13,21 +13,33 @@ import (
 
 type AccountService struct{}
 
-func (us *AccountService) Register(registerInfo *model.RegisterInfo) {
+func (us *AccountService) Register(registerInfo *model.RegisterInfo) *api.JsonResult {
+	log.Printf("receiver param %s", registerInfo)
+
 	password := registerInfo.Password
 
 	worker, err := util.NewWorker(16)
 	if err != nil {
 		log.Print(err)
-		panic(api.UserAddFailErr)
+		return api.JsonError(api.UserAddFailErr)
 	}
 
-	// check user info
-	checkRegisterInfo(registerInfo)
+	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
+	exist, err := userDao.QueryByPhone(registerInfo.Phone)
+	log.Printf("check Phone %v %v", exist, err)
+	if exist || err != nil {
+		return api.JsonError(api.PhoneExistErr)
+	}
+
+	exist, err = userDao.QueryByUserName(registerInfo.UserName)
+	log.Printf("check UserName %v %v", exist, err)
+	if exist || err != nil {
+		return api.JsonError(api.UserNameExistErr)
+	}
 
 	userInfo := &model.UserInfo{
 		UserName:    registerInfo.UserName,
-		UserId:      strconv.FormatInt(worker.GetId(), 10),
+		UserId:      worker.GetId(),
 		Gender:      registerInfo.Gender,
 		Phone:       registerInfo.Phone,
 		Avatar:      registerInfo.Avatar,
@@ -36,59 +48,56 @@ func (us *AccountService) Register(registerInfo *model.RegisterInfo) {
 		Description: registerInfo.Description,
 	}
 
-	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
 	result, err := userDao.InsertUser(userInfo)
 	log.Printf("add user result %v error %v", result, err)
 	if err != nil {
-		panic(api.UserAddFailErr.WithErrMsg(err))
+		return api.JsonError(api.UserAddFailErr)
 	}
 
 	passwordInfo := &model.Password{
-		PwdId:  strconv.FormatInt(worker.GetId(), 10),
+		PwdId:  worker.GetId(),
 		UserId: userInfo.UserId,
 		Pwd:    util.CryptoSha1(password),
 	}
 	result, err = userDao.InsertPassword(passwordInfo)
 	log.Printf("add password result %v error %v", result, err)
 	if err != nil {
-		panic(api.UserAddFailErr)
+		return api.JsonError(api.UserAddFailErr)
 	}
+	return api.JsonSuccess()
 }
 
-func (as *AccountService) Login(loginInfo *model.LoginInfo) string {
-
+func (as *AccountService) Login(loginInfo *model.LoginInfo) *api.JsonResult {
 	loginType := loginInfo.LoginType
 	if loginType == "password" {
-		// check user info
-		checkLoginInfo(loginInfo)
 		return loginWithPassword(loginInfo)
 	} else if loginType == "sms" {
 		return loginWithSmsCode(loginInfo)
 	}
-	panic(api.LoginTypeErr)
+	return api.JsonError(api.LoginTypeErr)
 }
 
 // login width sms code
-func loginWithSmsCode(loginInfo *model.LoginInfo) string {
+func loginWithSmsCode(loginInfo *model.LoginInfo) *api.JsonResult {
 
 	mobile := loginInfo.Mobile
 	if mobile == "" {
-		panic(api.PhoneEmptyErr)
+		return api.JsonError(api.PhoneEmptyErr)
 	}
 
 	smsCode := loginInfo.SmsCode
 	if smsCode == "" {
-		panic(api.SmsCodeEmptyErr)
+		return api.JsonError(api.SmsCodeEmptyErr)
 	}
 
 	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
 	userResult, userErr := userDao.QueryUserIdByPhone(mobile)
 	if userErr != nil {
-		panic(api.PhoneNumberErr)
+		return api.JsonError(api.PhoneNumberErr)
 	}
 	if len(userResult) == 0 {
 		log.Println(userResult)
-		panic(api.PhoneNumberErr)
+		return api.JsonError(api.PhoneNumberErr)
 	}
 
 	smsService := &SenderMessageService{}
@@ -96,97 +105,64 @@ func loginWithSmsCode(loginInfo *model.LoginInfo) string {
 	saveSmsCode := smsService.CheckSms(sms)
 
 	if !strings.EqualFold(smsCode, saveSmsCode) {
-		panic(api.SmsCodeErr)
+		return api.JsonError(api.SmsCodeErr)
 	}
 
-	userId := string(userResult[0]["user_id"])
-	return createToken(&model.UserInfo{UserId: userId})
+	userId, _ := strconv.ParseInt(string(userResult[0]["user_id"]), 10, 64)
+	token, err := createToken(userId)
+	if err != nil {
+		return api.JsonError(api.JwtGeneratorErr)
+	}
+	return api.JsonData(token)
 }
 
 // login with password
-func loginWithPassword(loginInfo *model.LoginInfo) string {
+func loginWithPassword(loginInfo *model.LoginInfo) *api.JsonResult {
+
+	userName := loginInfo.UserName
+	if userName == "" {
+		return api.JsonError(api.UserNameEmptyErr)
+	}
+
+	password := loginInfo.Password
+	if password == "" {
+		return api.JsonError(api.PasswordEmptyErr)
+	}
 
 	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
 	userResult, userErr := userDao.QueryUserIdByUserName(loginInfo.UserName)
-	if userErr != nil {
+	if userErr != nil || len(userResult) == 0 {
 		log.Println(userErr)
-		panic(api.UserNameOrPasswordErr.WithErrMsg(userErr.Error()))
-	}
-	if len(userResult) == 0 {
-		log.Println(userResult)
-		panic(api.UserNameOrPasswordErr)
+		return api.JsonError(api.UserNameOrPasswordErr)
 	}
 
-	userId := string(userResult[0]["user_id"])
-	if userId == "" {
+	userId, err := strconv.ParseInt(string(userResult[0]["user_id"]), 10, 64)
+	if userId == 0 || err != nil {
 		log.Println("user id not exist")
-		panic(api.UserNameOrPasswordErr)
+		return api.JsonError(api.UserNameOrPasswordErr)
 	}
+
 	passwordDao := dao.PasswordDao{DbEngine: engine.GetOrmEngine()}
 	pwdResult, pwdErr := passwordDao.QueryPasswordByUserId(userId)
-	if pwdErr != nil {
+	if pwdErr != nil || len(pwdResult) == 0 {
 		log.Println(pwdErr)
-		panic(api.UserNameOrPasswordErr.WithErrMsg(pwdErr.Error()))
+		return api.JsonError(api.UserNameOrPasswordErr)
 	}
-	if len(pwdResult) == 0 {
-		log.Println(pwdResult)
-		panic(api.UserNameOrPasswordErr)
-	}
+
 	pwd := string(pwdResult[0]["pwd"])
 	encodePwd := util.CryptoSha1(loginInfo.Password)
 	if !strings.EqualFold(pwd, encodePwd) {
 		// log.Println(pwd, " \n ", encodePwd)
-		panic(api.UserNameOrPasswordErr)
+		return api.JsonError(api.UserNameOrPasswordErr)
 	}
-	return createToken(&model.UserInfo{UserId: userId})
-}
-
-// cerate jwt tokn
-func createToken(userInfo *model.UserInfo) string {
-	token, err := util.GeneratorJwt(userInfo)
+	token, err := createToken(userId)
 	if err != nil {
-		panic(api.JwtGeneratorErr)
+		return api.JsonError(api.JwtGeneratorErr)
 	}
-	return token
+	return api.JsonData(token)
 }
 
-// check login info
-func checkLoginInfo(loginInfo *model.LoginInfo) {
-	loginType := loginInfo.LoginType
-
-	if loginType == "password" {
-		userName := loginInfo.UserName
-		if userName == "" {
-			panic(api.UserNameEmptyErr)
-		}
-		password := loginInfo.Password
-		if password == "" {
-			panic(api.PasswordEmptyErr)
-		}
-	}
-	if loginType == "sms_code" {
-		mobile := loginInfo.Mobile
-		if mobile == "" {
-			panic(api.PhoneEmptyErr)
-		}
-		smsCode := loginInfo.SmsCode
-		if smsCode == "" {
-			panic(api.SmsCodeEmptyErr)
-		}
-	}
-}
-
-// check register info
-func checkRegisterInfo(registerInfo *model.RegisterInfo) {
-	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
-	exist, err := userDao.QueryByPhone(registerInfo.Phone)
-	log.Printf("check Phone %v %v", exist, err)
-	if exist {
-		panic(api.PhoneExistErr)
-	}
-	exist, err = userDao.QueryByUserName(registerInfo.UserName)
-	log.Printf("check UserName %v %v", exist, err)
-	if exist {
-		panic(api.UserNameExistErr)
-	}
+// cerate jwt token
+func createToken(userId int64) (string, error) {
+	return util.GeneratorJwt(&model.Payload{UserId: strconv.FormatInt(userId, 10)})
 }

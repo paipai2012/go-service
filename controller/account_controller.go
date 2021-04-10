@@ -2,7 +2,6 @@ package controller
 
 import (
 	"log"
-	"moose-go/api"
 	"moose-go/common"
 	"moose-go/model"
 	"moose-go/service"
@@ -22,20 +21,20 @@ func (ac *AccountController) Register(c *gin.Context) {
 	var registerInfo model.RegisterInfo
 	if err := c.BindJSON(&registerInfo); err != nil {
 		log.Println(err.Error())
-		panic(api.ErrParam.WithErrMsg(err.Error()))
+		common.FailedParam(c)
+		return
 	}
-	log.Printf("receiver param %s", registerInfo)
 	accountService := service.AccountService{}
-	accountService.Register(&registerInfo)
-	common.Success(c, 1)
+	common.JSON(c, accountService.Register(&registerInfo))
 }
 
 func (ac *AccountController) Login(c *gin.Context) {
 	var loginInfo model.LoginInfo
 	if err := c.BindJSON(&loginInfo); err != nil {
 		log.Println(err.Error())
-		panic(api.ErrParam.WithErrMsg(err.Error()))
+		common.FailedParam(c)
+		return
 	}
 	accountService := service.AccountService{}
-	common.Success(c, accountService.Login(&loginInfo))
+	common.JSON(c, accountService.Login(&loginInfo))
 }

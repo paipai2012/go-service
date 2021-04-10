@@ -19,18 +19,15 @@ func (qrc *QRCodeController) RegisterRouter(app *gin.Engine) {
 
 func (qrc *QRCodeController) GetQRCode(c *gin.Context) {
 	qrCodeService := service.QRCodeService{}
-	qrCodeInfo := qrCodeService.GenerateQRCode(c)
-	common.Success(c, qrCodeInfo)
+	common.JSON(c, qrCodeService.GenerateQRCode(c))
 }
 
 func (qrc *QRCodeController) AskQRCode(c *gin.Context) {
 	qrCodeService := service.QRCodeService{}
-	status := qrCodeService.AskQRCode(c)
-	common.Success(c, status)
+	common.JSON(c, qrCodeService.AskQRCode(c))
 }
 
 func (qrc *QRCodeController) ScanLogin(c *gin.Context) {
 	qrCodeService := service.QRCodeService{}
-	qrCodeService.ScanLogin(c)
-	common.Success(c, 1)
+	common.JSON(c, qrCodeService.ScanLogin(c))
 }

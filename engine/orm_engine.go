@@ -28,10 +28,8 @@ func NewOrmEngine(appInfo *model.AppInfo) {
 	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", appInfo.UserName, appInfo.Password, appInfo.Host, appInfo.Port, appInfo.DataBase)
 	engine, err := xorm.NewEngine(appInfo.DriverName, url)
 
-	log.Println(appInfo)
-
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Panic(err.Error())
 		return
 	}
 

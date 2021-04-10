@@ -9,90 +9,75 @@ import (
 	"moose-go/engine"
 	"moose-go/model"
 	"moose-go/util"
-	"time"
+	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
 )
 
 type UserService struct {
 }
 
-func (us *UserService) GetUserByUserId(userId string) []map[string][]byte {
-	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
-	result, err := userDao.QueryByUserId(userId)
-	if err != nil {
-		panic(api.QueryUserFailErr)
-	}
-	return result
-}
-
-func (us *UserService) GetAllUser() []*model.UserInfo {
+func (us *UserService) GetAllUser() *api.JsonResult {
 	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
 	rows, err := userDao.QueryUserList()
 	if err != nil {
-		panic(api.QueryUserFailErr)
+		return api.JsonError(api.QueryUserFailErr)
 	}
 	// []map[string][]byte
 	list := make([]*model.UserInfo, len(rows))
 	for index, value := range rows {
 		// []byte
-		UserId := string(value["user_id"])
-		UserName := string(value["username"])
-		Phone := string(value["phone"])
-		Avatar := string(value["avatar"])
-		userInfo := model.UserInfo{UserId: UserId, UserName: UserName, Phone: Phone, Avatar: Avatar}
+		UserId, _ := strconv.ParseInt(string(value["user_id"]), 10, 64)
+		userInfo := model.UserInfo{
+			UserId:      UserId,
+			UserName:    string(value["username"]),
+			Phone:       string(value["phone"]),
+			Avatar:      string(value["avatar"]),
+			Gender:      string(value["gender"]),
+			Address:     string(value["address"]),
+			Email:       string(value["email"]),
+			Description: string(value["description"]),
+		}
 		list[index] = &userInfo
-		// list = append(list, &userInfo)
 	}
-	return list
+	return api.JsonData(list)
 }
 
-func (uc *UserService) CacheUser(c *gin.Context) string {
-	redisHelper := engine.GetRedisEngine()
-	userInfo := &model.UserInfo{UserId: "56867897283718"}
-	name, err := redisHelper.Set(ctx, "moose-go", userInfo, 10*time.Minute).Result()
-	if err != nil {
-		log.Panic(err)
-	}
-	return name
-}
-
-func (uc *UserService) GetCacheUser(c *gin.Context) *model.UserInfo {
-	redisHelper := engine.GetRedisEngine()
-	name, err := redisHelper.Get(ctx, "moose-go").Result()
-	if err != nil {
-		log.Panic(err)
-		return nil
-	}
-
-	var userInfo model.UserInfo
-	json.Unmarshal([]byte(name), &userInfo)
-	return &userInfo
-}
-
-func (uc *UserService) GetUserByToken(header string) *model.UserInfo {
+func (uc *UserService) GetUserWithToken(header string) *api.JsonResult {
 	token := util.ParseBearerToken(header)
+	if token == "" {
+		return api.JsonError(api.JwtExpiresErr)
+	}
+
 	jwtToken := util.ParseJwt(token)
+	if jwtToken == nil {
+		return api.JsonError(api.JwtExpiresErr)
+	}
+
 	data, err := json.Marshal(jwtToken.Claims)
 	if err != nil {
-		panic(api.QueryUserFailErr)
+		return api.JsonError(api.JwtExpiresErr)
 	}
 
 	var claims jwt.MapClaims
 	err = json.Unmarshal(data, &claims)
 	if err != nil {
-		panic(api.QueryUserFailErr)
+		return api.JsonError(api.JwtExpiresErr)
 	}
 
-	userId, ok := claims["userId"]
-	if userId == "" || !ok {
-		panic(api.QueryUserFailErr)
+	id, ok := claims["userId"]
+	log.Printf("%v", claims)
+	if id == "" || !ok {
+		return api.JsonError(api.JwtExpiresErr)
 	}
 
-	result := uc.GetUserByUserId(fmt.Sprintf("%s", userId))
+	userId, _ := strconv.ParseInt(fmt.Sprintf("%s", id), 10, 64)
+	result, err := uc.getUserWithUserId(userId)
+	if err != nil {
+		return api.JsonError(api.QueryUserFailErr)
+	}
 	userInfo := &model.UserInfo{
-		UserId:      string(result[0]["user_id"]),
+		UserId:      userId,
 		UserName:    string(result[0]["username"]),
 		Phone:       string(result[0]["phone"]),
 		Avatar:      string(result[0]["avatar"]),
@@ -101,12 +86,10 @@ func (uc *UserService) GetUserByToken(header string) *model.UserInfo {
 		Email:       string(result[0]["email"]),
 		Description: string(result[0]["description"]),
 	}
-	return userInfo
+	return api.JsonData(userInfo)
 }
 
-// func bytesToInt(bys []byte) int64 {
-// 	bytebuff := bytes.NewBuffer(bys)
-// 	var data int64
-// 	binary.Read(bytebuff, binary.BigEndian, &data)
-// 	return int64(data)
-// }
+func (us *UserService) getUserWithUserId(userId int64) ([]map[string][]byte, error) {
+	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
+	return userDao.QueryByUserId(userId)
+}

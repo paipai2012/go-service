@@ -3,6 +3,7 @@ package middleware
 import (
 	"log"
 	"moose-go/api"
+	"moose-go/common"
 	"moose-go/util"
 
 	"github.com/gin-gonic/gin"
@@ -29,12 +30,23 @@ func AuthRequired() gin.HandlerFunc {
 		log.Println("auth check token... ", bearerToken)
 
 		if bearerToken == "" {
-			panic(api.JwtValidationErr)
+			common.JSON(c, api.JsonError(api.JwtValidationErr))
+			return
 		}
 
 		// Bearer xxxx
 		token := util.ParseBearerToken(bearerToken)
-		util.ParseJwt(token)
+		if token == "" {
+			common.JSON(c, api.JsonError(api.JwtValidationErr))
+			return
+		}
+
+		jwtToken := util.ParseJwt(token)
+		if jwtToken == nil {
+			common.JSON(c, api.JsonError(api.JwtValidationErr))
+			return
+		}
+
 		c.Next()
 	}
 }

@@ -3,7 +3,6 @@ package recover
 import (
 	"fmt"
 	"log"
-	"moose-go/api"
 	"moose-go/common"
 	"path/filepath"
 	"runtime"
@@ -30,18 +29,7 @@ func Recover() gin.HandlerFunc {
 				}
 
 				log.Printf("异常捕获 | url %s | method | %s | error %v | error type %T | fileName %s | line %d |", url, method, err, err, fileName, line)
-
-				if err != nil {
-					switch err.(type) {
-					case *api.Exception:
-						common.Failed(c, err.(*api.Exception))
-					case string:
-						common.Failed(c, &api.Exception{Code: -1, Message: err.(string)})
-					default:
-						common.Failed(c, &api.Exception{Code: -2, Message: fmt.Sprintf("%v", err)})
-					}
-				}
-				c.Abort()
+				common.JSON(c, fmt.Sprintf("%v", err))
 			}
 		}()
 		c.Next()

@@ -3,7 +3,7 @@ package model
 import "encoding/json"
 
 type UserInfo struct {
-	UserId      string `json:"userId" xorm:"user_id" mapstructure:"user_id"`
+	UserId      int64  `json:"userId,string" xorm:"user_id"`
 	UserName    string `json:"userName" xorm:"username"`
 	Phone       string `json:"phone" xorm:"phone"`
 	Gender      string `json:"gender" xorm:"gender"`
@@ -15,7 +15,7 @@ type UserInfo struct {
 	UpdateTime  string `json:"updateTime" xorm:"<- update_time"`
 }
 
-func (u *UserInfo) NewUser(userId, userName, phone, gender, email, address, description string) *UserInfo {
+func (u *UserInfo) NewUser(userId int64, userName, phone, gender, email, address, description string) *UserInfo {
 	return &UserInfo{
 		UserId:      userId,
 		UserName:    userName,
