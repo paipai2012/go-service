@@ -44,6 +44,35 @@ func (us *UserService) GetAllUser() *api.JsonResult {
 }
 
 func (uc *UserService) GetUserWithToken(header string) *api.JsonResult {
+	jsonResult := uc.getCurrentUserId(header)
+	if jsonResult.Code != 200 {
+		return jsonResult
+	}
+
+	userId, _ := strconv.ParseInt(fmt.Sprintf("%s", jsonResult.Data), 10, 64)
+	result, err := uc.getUserWithUserId(userId)
+	if err != nil {
+		return api.JsonError(api.QueryUserFailErr)
+	}
+	userInfo := &model.UserInfo{
+		UserId:      userId,
+		UserName:    string(result[0]["username"]),
+		Phone:       string(result[0]["phone"]),
+		Avatar:      string(result[0]["avatar"]),
+		Gender:      string(result[0]["gender"]),
+		Address:     string(result[0]["address"]),
+		Email:       string(result[0]["email"]),
+		Description: string(result[0]["description"]),
+	}
+	return api.JsonData(userInfo)
+}
+
+func (us *UserService) getUserWithUserId(userId int64) ([]map[string][]byte, error) {
+	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
+	return userDao.QueryByUserId(userId)
+}
+
+func (uc *UserService) getCurrentUserId(header string) *api.JsonResult {
 	token := util.ParseBearerToken(header)
 	if token == "" {
 		return api.JsonError(api.JwtExpiresErr)
@@ -70,26 +99,5 @@ func (uc *UserService) GetUserWithToken(header string) *api.JsonResult {
 	if id == "" || !ok {
 		return api.JsonError(api.JwtExpiresErr)
 	}
-
-	userId, _ := strconv.ParseInt(fmt.Sprintf("%s", id), 10, 64)
-	result, err := uc.getUserWithUserId(userId)
-	if err != nil {
-		return api.JsonError(api.QueryUserFailErr)
-	}
-	userInfo := &model.UserInfo{
-		UserId:      userId,
-		UserName:    string(result[0]["username"]),
-		Phone:       string(result[0]["phone"]),
-		Avatar:      string(result[0]["avatar"]),
-		Gender:      string(result[0]["gender"]),
-		Address:     string(result[0]["address"]),
-		Email:       string(result[0]["email"]),
-		Description: string(result[0]["description"]),
-	}
-	return api.JsonData(userInfo)
-}
-
-func (us *UserService) getUserWithUserId(userId int64) ([]map[string][]byte, error) {
-	userDao := dao.UserDao{DbEngine: engine.GetOrmEngine()}
-	return userDao.QueryByUserId(userId)
+	return api.JsonData(id)
 }

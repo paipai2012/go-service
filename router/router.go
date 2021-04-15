@@ -15,6 +15,7 @@ func InitRouter(app *gin.Engine) {
 	new(controller.AccountController).RegisterRouter(app)
 	new(controller.QRCodeController).RegisterRouter(app)
 	new(controller.SmsController).RegisterRouter(app)
+	new(controller.SignInController).RegisterRouter(app)
 
 	app.NoRoute(common.NotFound)
 }
