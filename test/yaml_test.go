@@ -9,7 +9,31 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func TestYaml(t *testing.T) {
+func TestTemplate(t *testing.T) {
+
+	type Info struct {
+		Name  string
+		Age   int
+		Hobby []string
+	}
+
+	data := `
+name: 江景
+age: 18
+hobby: ["code", "read"]
+`
+
+	info := Info{}
+	err := yaml.Unmarshal([]byte(data), &info)
+	if err != nil {
+		t.Log(err)
+		return
+	}
+
+	t.Log(info)
+}
+
+func estYaml(t *testing.T) {
 
 	file, err := os.Open("../config/application-dev.yml")
 	if err != nil {
