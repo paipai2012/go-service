@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"moose-go/util"
 	"sync"
 	"time"
 
@@ -20,8 +21,10 @@ func GetRedisEngine() *RedisEngine {
 }
 
 func NewRedisEngine() {
+	appInfo := util.GetYamlConfig()
+
 	rdb := redis.NewClient(&redis.Options{
-		Addr:         "localhost:6379",
+		Addr:         appInfo.Redis.Host,
 		Password:     "",
 		DB:           0,
 		DialTimeout:  10 * time.Second,

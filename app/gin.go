@@ -17,7 +17,7 @@ import (
 )
 
 func InitGin() {
-	config := util.GetConfig()
+	config := util.GetYamlConfig()
 
 	app := gin.Default()
 
@@ -37,7 +37,7 @@ func InitGin() {
 	defer server.Close()
 	router.InitSocket(app, server)
 
-	gin.SetMode(config.AppMode)
+	gin.SetMode(config.App.Mode)
 
 	handleSignal(app)
 

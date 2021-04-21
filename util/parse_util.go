@@ -3,17 +3,23 @@ package util
 import (
 	"bufio"
 	"encoding/json"
+	"io/ioutil"
+	"log"
 	"moose-go/model"
 	"os"
+
+	"gopkg.in/yaml.v2"
 )
 
-var _cfg *model.AppInfo = nil
+var _jsonCfg *model.AppInfo = nil
 
-func GetConfig() *model.AppInfo {
-	return _cfg
+var _yamlCfg *model.AppConfig = nil
+
+func GetJSONConfig() *model.AppInfo {
+	return _jsonCfg
 }
 
-func ParseConfig(path string) *model.AppInfo {
+func ParseJSONConfig(path string) *model.AppInfo {
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -25,10 +31,36 @@ func ParseConfig(path string) *model.AppInfo {
 	reader := bufio.NewReader(file)
 	decoder := json.NewDecoder(reader)
 
-	err = decoder.Decode(&_cfg)
+	err = decoder.Decode(&_jsonCfg)
 
 	if err != nil {
 		panic(err)
 	}
-	return _cfg
+	return _jsonCfg
+}
+
+func GetYamlConfig() *model.AppConfig {
+	return _yamlCfg
+}
+
+func ParseYamlConfig(path string) *model.AppConfig {
+
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+
+	err = yaml.Unmarshal([]byte(data), &_yamlCfg)
+
+	if err != nil {
+		panic(err)
+	}
+
+	log.Println(_yamlCfg)
+
+	return _yamlCfg
 }

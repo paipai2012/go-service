@@ -3,7 +3,7 @@ package engine
 import (
 	"fmt"
 	"log"
-	"moose-go/model"
+	"moose-go/util"
 	"sync"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -24,9 +24,11 @@ func GetOrmEngine() *Orm {
 	return dbEngine
 }
 
-func NewOrmEngine(appInfo *model.AppInfo) {
-	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", appInfo.UserName, appInfo.Password, appInfo.Host, appInfo.Port, appInfo.DataBase)
-	engine, err := xorm.NewEngine(appInfo.DriverName, url)
+func NewOrmEngine() {
+	appInfo := util.GetYamlConfig()
+
+	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", appInfo.MySql.UserName, appInfo.MySql.Password, appInfo.MySql.Host, appInfo.MySql.Port, appInfo.MySql.DataBase)
+	engine, err := xorm.NewEngine(appInfo.MySql.DriverName, url)
 
 	if err != nil {
 		log.Panic(err.Error())

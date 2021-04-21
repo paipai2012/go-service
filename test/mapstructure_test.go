@@ -1,4 +1,4 @@
-package util
+package test
 
 import (
 	"moose-go/engine"
@@ -9,15 +9,7 @@ import (
 
 func TestExample(t *testing.T) {
 
-	config := &model.AppInfo{
-		DriverName: "mysql",
-		UserName:   "root",
-		Password:   "123456",
-		Port:       "3306",
-		DataBase:   "moose-go",
-	}
-
-	engine.NewOrmEngine(config)
+	engine.NewOrmEngine()
 
 	dbEngine := engine.GetOrmEngine()
 	sql := "select user_id, username, phone, gender, avatar, email, job, address, description from t_user_info where user_id = ? "

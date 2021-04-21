@@ -1,0 +1,14 @@
+app:
+  name: moose-go
+  mode: debug
+
+mysql:
+  host: "127.0.0.1"
+  port: "3306"
+  driverName: mysql
+  username: root
+  password: "123456"
+  database: moose-go
+
+redis:
+  host: localhost:6379

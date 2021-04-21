@@ -1,12 +1,15 @@
-package util
+package test
 
 import (
 	"fmt"
+	"moose-go/model"
 	"testing"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
+
+var verifyKey = []byte("moose-go")
 
 // 普通测试
 func TestCreateJWT(t *testing.T) {
@@ -25,7 +28,7 @@ func TestCreateJWT(t *testing.T) {
 	// claims["exp"] = time.Now().Add(time.Millisecond * 1).Unix()
 	// claims["user"] = user
 
-	claims := &CustomClaims{
+	claims := &model.CustomClaims{
 		&jwt.StandardClaims{
 			// set the expire time
 			// see http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-20#section-4.1.4

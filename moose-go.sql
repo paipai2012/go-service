@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS `t_user_info`;
+
 CREATE TABLE `t_user_info` (
   `user_id` bigint(20) NOT NULL COMMENT '用户Id',
   `username` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '用户名',
@@ -18,7 +19,9 @@ CREATE TABLE `t_user_info` (
   KEY `idx_create_time` (`create_time`),
   KEY `idx_update_time` (`update_time`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin COMMENT = '用户信息表';
+
 DROP TABLE IF EXISTS `t_password`;
+
 CREATE TABLE `t_password` (
   `pwd_id` bigint(20) NOT NULL COMMENT '密码ID',
   `user_id` bigint(20) NOT NULL COMMENT '账号ID',
@@ -32,4 +35,3 @@ CREATE TABLE `t_password` (
   KEY `idx_password_id` (`pwd_id`),
   CONSTRAINT `t_user_password_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `t_user_info` (`user_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin COMMENT = '密码表';
-¸

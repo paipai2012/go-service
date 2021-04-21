@@ -16,7 +16,7 @@ import (
 
 type SignInService struct{}
 
-const TEST_USER_ID = 385758996637745152
+const TEST_USER_ID = 1000
 
 func buildSignInKey(userId int64) string {
 	yearMoth := util.GetYearMonth()

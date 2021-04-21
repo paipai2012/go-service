@@ -14,13 +14,8 @@ type JwtUtil struct{}
 
 var verifyKey = []byte("moose-go")
 
-type CustomClaims struct {
-	*jwt.StandardClaims
-	*model.Payload
-}
-
 func GeneratorJwt(payload *model.Payload) (string, error) {
-	claims := &CustomClaims{
+	claims := &model.CustomClaims{
 		&jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * 60 * 24).Unix(),
 			IssuedAt:  time.Now().Unix(),

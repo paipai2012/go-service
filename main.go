@@ -6,7 +6,9 @@ import (
 )
 
 func init() {
-	util.ParseConfig("./config/moose.json")
+	// util.ParseJSONConfig("./config/application-dev.json")
+	util.ParseYamlConfig("./config/application-dev.yml")
+	// util.ParseYamlConfig("./config/application-prod.yml")
 }
 
 func main() {
