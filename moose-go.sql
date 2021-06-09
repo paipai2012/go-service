@@ -35,3 +35,19 @@ CREATE TABLE `t_password` (
   KEY `idx_password_id` (`pwd_id`),
   CONSTRAINT `t_user_password_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `t_user_info` (`user_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin COMMENT = '密码表';
+
+DROP TABLE IF EXISTS `t_article_info`;
+
+CREATE TABLE `t_article_info` (
+  `id` bigint(20) NOT NULL COMMENT '主键ID',
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+  `title` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '文章标题',
+  `content` longtext COLLATE utf8_bin NOT NULL COMMENT '文章内容',
+  `description` varchar(255) COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '描述',
+  `cover` varchar(255) COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '文章封面图',
+  `status` char(1) COLLATE utf8_bin DEFAULT '1' COMMENT '帐号启用状态:0->隐藏；1->展示',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  UNIQUE KEY `uniq_id` (`id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin COMMENT = '文章表';

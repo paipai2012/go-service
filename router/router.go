@@ -13,6 +13,7 @@ import (
 
 func InitRouter(app *gin.Engine) {
 	new(controller.AccountController).RegisterRouter(app)
+	new(controller.ArticleController).RegisterRouter(app)
 
 	// new(v1.UserController).RegisterRouter(app)
 	// new(controller.QRCodeController).RegisterRouter(app)

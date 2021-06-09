@@ -34,6 +34,8 @@ var (
 	QRCodeRetryErr   = NewError(30002, "重新获取二维码")
 	QRCodeGetFailErr = NewError(30003, "获取二维码失败")
 
+	AddArticleFailErr = NewError(50001, "添加文章失败")
+
 	JwtValidationErr = NewError(90001, "令牌验证失败")
 	JwtExpiresErr    = NewError(90002, "无效令牌")
 	JwtGeneratorErr  = NewError(90003, "生成令牌失败")
