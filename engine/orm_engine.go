@@ -3,13 +3,12 @@ package engine
 import (
 	"fmt"
 	"log"
-	"moose-go/util"
+	"sale-service/util"
 	"sync"
 
 	_ "github.com/go-sql-driver/mysql"
 
 	"xorm.io/xorm"
-	"xorm.io/xorm/names"
 )
 
 type Orm struct {
@@ -35,8 +34,8 @@ func NewOrmEngine() {
 		return
 	}
 
-	prefix := names.NewPrefixMapper(names.SnakeMapper{}, "t_")
-	engine.SetTableMapper(prefix)
+	// prefix := names.NewPrefixMapper(names.SnakeMapper{}, "t_")
+	// engine.SetTableMapper(prefix)
 
 	engine.ShowSQL(true)
 

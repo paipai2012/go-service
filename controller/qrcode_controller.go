@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"moose-go/common"
-	"moose-go/service"
+	"sale-service/common"
+	"sale-service/service"
 
 	"github.com/gin-gonic/gin"
 )

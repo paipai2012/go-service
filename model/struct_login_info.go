@@ -7,3 +7,8 @@ type LoginInfo struct {
 	SmsCode   string `json:"smsCode"`
 	LoginType string `json:"loginType" binding:"required,valuein=password sms"`
 }
+
+type AgentLoginInfo struct {
+	AppId     string `json:"appId"`
+	AppSecret string `json:"appSecret"`
+}

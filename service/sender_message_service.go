@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"moose-go/api"
-	"moose-go/constant"
-	"moose-go/engine"
-	"moose-go/model"
+	"sale-service/api"
+	"sale-service/constant"
+	"sale-service/engine"
+	"sale-service/model"
 	"time"
 )
 

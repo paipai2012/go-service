@@ -3,9 +3,9 @@ package recover
 import (
 	"fmt"
 	"log"
-	"moose-go/common"
 	"path/filepath"
 	"runtime"
+	"sale-service/common"
 	"strings"
 
 	"github.com/gin-gonic/gin"

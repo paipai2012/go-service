@@ -2,8 +2,8 @@ package test
 
 import (
 	"io/ioutil"
-	"moose-go/model"
 	"os"
+	"sale-service/model"
 	"testing"
 
 	"gopkg.in/yaml.v2"

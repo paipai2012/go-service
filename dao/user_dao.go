@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"moose-go/engine"
-	"moose-go/model"
+	"sale-service/engine"
+	"sale-service/model"
 )
 
 type UserDao struct {

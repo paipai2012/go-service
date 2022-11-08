@@ -2,11 +2,11 @@ package service
 
 import (
 	"log"
-	"moose-go/api"
-	"moose-go/dao"
-	"moose-go/engine"
-	"moose-go/model"
-	"moose-go/util"
+	"sale-service/api"
+	"sale-service/dao"
+	"sale-service/engine"
+	"sale-service/model"
+	"sale-service/util"
 	"strconv"
 	"strings"
 )
@@ -75,6 +75,18 @@ func (as *AccountService) Login(loginInfo *model.LoginInfo) *api.JsonResult {
 		return loginWithSmsCode(loginInfo)
 	}
 	return api.JsonError(api.LoginTypeErr)
+}
+
+func (as *AccountService) AgentLogin(loginInfo *model.AgentLoginInfo) *api.JsonResult {
+	configInfo := util.GetYamlConfig()
+	if loginInfo.AppId != configInfo.Agent.AppId || loginInfo.AppSecret != configInfo.Agent.AppSecret {
+		return api.JsonError(api.AgentLoginErr)
+	}
+	token, err := createAgentToken(loginInfo.AppId)
+	if err != nil {
+		return api.JsonError(api.JwtGeneratorErr)
+	}
+	return api.JsonData(token)
 }
 
 // login width sms code
@@ -165,4 +177,9 @@ func loginWithPassword(loginInfo *model.LoginInfo) *api.JsonResult {
 // cerate jwt token
 func createToken(userId int64) (string, error) {
 	return util.GeneratorJwt(&model.Payload{UserId: strconv.FormatInt(userId, 10)})
+}
+
+// cerate agent jwt token
+func createAgentToken(appId string) (string, error) {
+	return util.GeneratorAgentJwt(&model.AgentPayload{AppId: appId})
 }

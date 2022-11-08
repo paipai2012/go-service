@@ -1,14 +1,19 @@
 package main
 
 import (
-	"moose-go/app"
-	"moose-go/util"
+	"sale-service/app"
+	"sale-service/util"
+
+	"github.com/gin-gonic/gin"
 )
 
 func init() {
-	// util.ParseJSONConfig("./config/application-dev.json")
-	util.ParseYamlConfig("./config/application-dev.yml")
-	// util.ParseYamlConfig("./config/application-prod.yml")
+	mode := gin.Mode()
+	if mode == "release" {
+		util.ParseYamlConfig("./config/application-prod.yml")
+	} else {
+		util.ParseYamlConfig("./config/application-dev.yml")
+	}
 }
 
 func main() {

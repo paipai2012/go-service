@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-	"moose-go/model"
 	"os"
+	"sale-service/model"
 
 	"gopkg.in/yaml.v2"
 )

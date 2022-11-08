@@ -3,7 +3,7 @@ package util
 import (
 	"fmt"
 	"log"
-	"moose-go/model"
+	"sale-service/model"
 	"strings"
 	"time"
 
@@ -12,7 +12,7 @@ import (
 
 type JwtUtil struct{}
 
-var verifyKey = []byte("moose-go")
+var verifyKey = []byte("sale-service")
 
 func GeneratorJwt(payload *model.Payload) (string, error) {
 	claims := &model.CustomClaims{
@@ -27,6 +27,18 @@ func GeneratorJwt(payload *model.Payload) (string, error) {
 	return token.SignedString(verifyKey)
 }
 
+func GeneratorAgentJwt(payload *model.AgentPayload) (string, error) {
+	claims := &model.AgentCustomClaims{
+		&jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * 60 * 24).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+		payload,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(verifyKey)
+}
 func ParseJwt(tokenStr string) *jwt.Token {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

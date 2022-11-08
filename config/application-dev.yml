@@ -1,5 +1,5 @@
 app:
-  name: moose-go
+  name: sale-service
   mode: debug
 
 mysql:
@@ -7,8 +7,12 @@ mysql:
   port: "3306"
   driverName: mysql
   username: root
-  password: "123456"
-  database: moose-go
+  password: ""
+  database: sale
+
+agent:
+  appId: weixin
+  appSecret: grSDG234
 
 redis:
   host: localhost:6379

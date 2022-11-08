@@ -2,13 +2,13 @@ package app
 
 import (
 	"log"
-	"moose-go/engine"
-	"moose-go/middleware"
-	"moose-go/middleware/recover"
-	"moose-go/router"
-	"moose-go/util"
 	"os"
 	"os/signal"
+	"sale-service/engine"
+	"sale-service/middleware"
+	"sale-service/middleware/recover"
+	"sale-service/router"
+	"sale-service/util"
 	"syscall"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +18,6 @@ import (
 
 func InitGin() {
 	config := util.GetYamlConfig()
-
 	app := gin.Default()
 
 	// 使用中间件

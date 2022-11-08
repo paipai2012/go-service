@@ -1,7 +1,7 @@
 package app
 
 import (
-	mv "moose-go/validator"
+	mv "sale-service/validator"
 
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"

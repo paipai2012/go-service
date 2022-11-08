@@ -1,7 +1,7 @@
 package validator
 
 import (
-	"moose-go/util"
+	"sale-service/util"
 	"strings"
 
 	"github.com/go-playground/validator/v10"

@@ -2,9 +2,9 @@ package controller
 
 import (
 	"log"
-	"moose-go/common"
-	"moose-go/model"
-	"moose-go/service"
+	"sale-service/common"
+	"sale-service/model"
+	"sale-service/service"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"moose-go/engine"
+	"sale-service/engine"
 )
 
 type PasswordDao struct {

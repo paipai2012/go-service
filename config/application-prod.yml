@@ -1,5 +1,5 @@
 app:
-  name: moose-go
+  name: sale-service
   mode: release
 
 mysql:

@@ -1,8 +1,8 @@
 package common
 
 import (
-	"moose-go/api"
 	"net/http"
+	"sale-service/api"
 	"time"
 
 	"github.com/gin-gonic/gin"

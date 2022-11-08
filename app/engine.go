@@ -1,7 +1,7 @@
 package app
 
 import (
-	"moose-go/engine"
+	"sale-service/engine"
 )
 
 func InitEngine() {

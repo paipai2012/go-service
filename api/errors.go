@@ -29,16 +29,21 @@ var (
 	PasswordEmptyErr = NewError(20302, "密码不能为空")
 	PasswordErr      = NewError(20403, "两次密码不一致")
 	LoginTypeErr     = NewError(20504, "登录方式错误")
+	AgentLoginErr    = NewError(20505, "客户端密钥错误")
 
 	QueryUserFailErr = NewError(30001, "获取用户信息失败")
 	QRCodeRetryErr   = NewError(30002, "重新获取二维码")
 	QRCodeGetFailErr = NewError(30003, "获取二维码失败")
 
-	AddArticleFailErr = NewError(50001, "添加文章失败")
+	AddLuckFailErr  = NewError(50001, "添加抽奖失败")
+	GetLuckFailErr  = NewError(50002, "获取抽奖失败")
+	LuckQuantityErr = NewError(50003, "奖品已经抽完")
+	AddDrawFailErr  = NewError(50004, "保存抽奖结果失败")
 
-	JwtValidationErr = NewError(90001, "令牌验证失败")
-	JwtExpiresErr    = NewError(90002, "无效令牌")
-	JwtGeneratorErr  = NewError(90003, "生成令牌失败")
+	JwtValidationErr      = NewError(90001, "令牌验证失败")
+	JwtAgentValidationErr = NewError(90004, "Agent令牌验证失败")
+	JwtExpiresErr         = NewError(90002, "无效令牌")
+	JwtGeneratorErr       = NewError(90003, "生成令牌失败")
 )
 
 func NewError(code int, text string) *CodeError {

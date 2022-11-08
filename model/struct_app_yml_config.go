@@ -18,4 +18,9 @@ type AppConfig struct {
 	Redis struct {
 		Host string `yaml:"host" json:"host"`
 	}
+
+	Agent struct {
+		AppId     string `yaml:"appId" json:"appId"`
+		AppSecret string `yaml:"appSecret" json:"appSecret"`
+	}
 }

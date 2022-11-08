@@ -1,10 +1,10 @@
 {
-  "app_name": "moose-go",
+  "app_name": "sale-service",
   "app_mode": "debug",
   "driver_name": "mysql",
   "username": "root",
   "password": "123456",
   "host": "127.0.0.1",
   "port": "3306",
-  "database": "moose-go"
+  "database": "sale-service"
 }

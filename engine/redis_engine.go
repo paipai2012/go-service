@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"moose-go/util"
+	"sale-service/util"
 	"sync"
 	"time"
 

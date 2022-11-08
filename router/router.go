@@ -1,10 +1,10 @@
 package router
 
 import (
-	"moose-go/common"
-	"moose-go/controller"
+	"sale-service/common"
+	"sale-service/controller"
 
-	// v1 "moose-go/controller/v1"
+	// v1 "sale-service/controller/v1"
 
 	"github.com/gin-gonic/gin"
 
@@ -12,8 +12,8 @@ import (
 )
 
 func InitRouter(app *gin.Engine) {
+	new(controller.LuckController).RegisterRouter(app)
 	new(controller.AccountController).RegisterRouter(app)
-	new(controller.ArticleController).RegisterRouter(app)
 
 	// new(v1.UserController).RegisterRouter(app)
 	// new(controller.QRCodeController).RegisterRouter(app)

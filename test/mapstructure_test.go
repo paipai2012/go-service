@@ -1,8 +1,8 @@
 package test
 
 import (
-	"moose-go/engine"
-	"moose-go/model"
+	"sale-service/engine"
+	"sale-service/model"
 	"testing"
 	// "github.com/mitchellh/mapstructure"
 )
