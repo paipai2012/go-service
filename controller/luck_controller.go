@@ -42,11 +42,25 @@ func (lc *LuckController) getLuck(c *gin.Context) {
 
 func (lc *LuckController) addDraw(c *gin.Context) {
 	var query struct {
-		LuckId int64 `form:"luck_id" binding:"required"`
+		LuckId   int64  `json:"luck_id" binding:"required"`
+		Username string `json:"username" binding:"required"`
 	}
-	if err := c.ShouldBind(&query); err != nil {
+	if err := c.BindJSON(&query); err != nil {
 		common.JSON(c, api.JsonError(api.GetLuckFailErr).JsonWithMsg(err.Error()))
 		return
 	}
-	common.JSON(c, service.LuckServiceInstance.AddDraw(query.LuckId))
+	common.JSON(c, service.LuckServiceInstance.AddDraw(query.LuckId, query.Username))
+}
+
+func (lc *LuckController) updateUserPhone(c *gin.Context) {
+	var query struct {
+		Phone    string `json:"phone" binding:"required"`
+		Username string `json:"username" binding:"required"`
+	}
+	if err := c.BindJSON(&query); err != nil {
+		common.JSON(c, api.JsonError(api.GetLuckFailErr).JsonWithMsg(err.Error()))
+		return
+	}
+
+	common.JSON(c, service.LuckServiceInstance.UpdateUserPhone(query.Username, query.Phone))
 }

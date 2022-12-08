@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"database/sql"
 	"sale-service/engine"
 	"sale-service/model"
 )
@@ -30,8 +31,10 @@ func (ld *LuckDao) AddDraw(item *model.LuckItem, record *model.LuckRecord, user 
 		return err
 	}
 
-	if _, err := session.Insert(user); err != nil {
-		return err
+	if user.Id == 0 {
+		if _, err := session.Insert(user); err != nil {
+			return err
+		}
 	}
 
 	record.UserId = user.Id
@@ -49,4 +52,10 @@ func (ld *LuckDao) AddDraw(item *model.LuckItem, record *model.LuckRecord, user 
 
 	// add Commit() after all actions
 	return session.Commit()
+}
+
+// 添加用户
+func (ld *LuckDao) UpdateUserPhone(luckUser *model.LuckUser) (sql.Result, error) {
+	sql := "update `luck_user` set mobile=? where username=?"
+	return ld.Db.Exec(sql, luckUser.Mobile, luckUser.Username)
 }

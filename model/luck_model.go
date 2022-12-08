@@ -34,6 +34,7 @@ type LuckRecord struct {
 	Id         int64     `json:"id"`
 	UserId     int64     `json:"user_id" binding:"required"`
 	ItemId     int64     `json:"item_id"`
+	LuckId     int64     `json:"luck_id"`
 	CreateTime time.Time `json:"create_time" xorm:"'create_time' created comment('创建时间') DATETIME"`
 	UpdateTime time.Time `json:"update_time" xorm:"'update_time' updated comment('更新时间') DATETIME"`
 }

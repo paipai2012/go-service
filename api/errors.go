@@ -35,10 +35,12 @@ var (
 	QRCodeRetryErr   = NewError(30002, "重新获取二维码")
 	QRCodeGetFailErr = NewError(30003, "获取二维码失败")
 
-	AddLuckFailErr  = NewError(50001, "添加抽奖失败")
-	GetLuckFailErr  = NewError(50002, "获取抽奖失败")
-	LuckQuantityErr = NewError(50003, "奖品已经抽完")
-	AddDrawFailErr  = NewError(50004, "保存抽奖结果失败")
+	AddLuckFailErr     = NewError(50001, "添加抽奖失败")
+	GetLuckFailErr     = NewError(50002, "获取抽奖失败")
+	LuckQuantityErr    = NewError(50003, "奖品已经抽完")
+	AddDrawFailErr     = NewError(50004, "保存抽奖结果失败")
+	LuckRepeatErr      = NewError(50005, "您已经抽过奖")
+	LuckUpdatePhoneErr = NewError(50006, "更新中奖用户手机号失败")
 
 	JwtValidationErr      = NewError(90001, "令牌验证失败")
 	JwtAgentValidationErr = NewError(90004, "Agent令牌验证失败")
