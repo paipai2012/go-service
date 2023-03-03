@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/signal"
 	"sale-service/engine"
-	"sale-service/middleware"
 	"sale-service/middleware/recover"
 	"sale-service/router"
 	"sale-service/util"
@@ -22,7 +21,7 @@ func InitGin() {
 
 	// 使用中间件
 	app.Use(recover.Recover())
-	app.Use(middleware.AuthRequired())
+	// app.Use(middleware.AuthRequired())
 
 	router.InitRouter(app)
 

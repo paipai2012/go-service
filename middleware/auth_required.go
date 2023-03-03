@@ -13,10 +13,13 @@ var anonymous = []string{
 	"/api/account/agent_login",
 	"/api/luck/get",
 	"/api/luck/addDraw",
+	"/chatgpt/chat",
 }
 
 var app_anonymous = []string{
 	"/api/account/agent_login",
+	"/chatgpt/chat",
+	// "/api/chatgpt/chat",
 }
 
 const IS_TEST_ENV = false

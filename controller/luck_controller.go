@@ -17,6 +17,7 @@ func (lc *LuckController) RegisterRouter(app *gin.Engine) {
 	group.POST("/create", lc.addLuck)
 	group.GET("/get", lc.getLuck)
 	group.POST("/addDraw", lc.addDraw)
+	group.POST("/updateUserPhone", lc.updateUserPhone)
 }
 
 func (lc *LuckController) addLuck(c *gin.Context) {
@@ -61,6 +62,5 @@ func (lc *LuckController) updateUserPhone(c *gin.Context) {
 		common.JSON(c, api.JsonError(api.GetLuckFailErr).JsonWithMsg(err.Error()))
 		return
 	}
-
 	common.JSON(c, service.LuckServiceInstance.UpdateUserPhone(query.Username, query.Phone))
 }
