@@ -31,6 +31,9 @@ func (cc *ChatgptController) RegisterRouter(app *gin.Engine) {
 // }
 
 func (cc *ChatgptController) chat(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	c.Header("Access-Control-Allow-Headers", "DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization")
 	var query struct {
 		Prompt string `form:"prompt" binding:"required"`
 	}
@@ -38,7 +41,7 @@ func (cc *ChatgptController) chat(c *gin.Context) {
 		common.JSON(c, api.JsonError(api.GetLuckFailErr).JsonWithMsg(err.Error()))
 		return
 	}
-	cg := gogpt.NewClient("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")
+	cg := gogpt.NewClient("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")
 	req := gogpt.CompletionRequest{
 		Model:       gogpt.GPT3TextDavinci003, // 选择的模型
 		MaxTokens:   500,
