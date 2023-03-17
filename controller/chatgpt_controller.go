@@ -19,6 +19,7 @@ var ChatgptController *chatgptController
 func init() {
 	ChatgptController = &chatgptController{}
 	ChatgptController.filter = sensitive.New()
+	//filter.LoadNetWordDict("https://raw.githubusercontent.com/importcjj/sensitive/master/dict/dict.txt")
 	ChatgptController.filter.LoadWordDict("dict.txt")
 }
 
