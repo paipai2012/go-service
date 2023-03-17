@@ -9,7 +9,9 @@ require (
 	github.com/go-redis/redis/v8 v8.8.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/googollee/go-socket.io v1.4.4
+	github.com/importcjj/sensitive v0.0.0-20200106142752-42d1c505be7b
 	github.com/jinzhu/copier v0.3.5
+	github.com/sashabaranov/go-gpt3 v1.1.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/cast v1.5.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -31,7 +33,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
-	github.com/sashabaranov/go-gpt3 v1.1.0 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	go.opentelemetry.io/otel v0.19.0 // indirect

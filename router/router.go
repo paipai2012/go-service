@@ -14,7 +14,8 @@ import (
 func InitRouter(app *gin.Engine) {
 	new(controller.LuckController).RegisterRouter(app)
 	new(controller.AccountController).RegisterRouter(app)
-	new(controller.ChatgptController).RegisterRouter(app)
+	// new(controller.ChatgptController).RegisterRouter(app)
+	controller.ChatgptController.RegisterRouter(app)
 
 	// new(v1.UserController).RegisterRouter(app)
 	// new(controller.QRCodeController).RegisterRouter(app)

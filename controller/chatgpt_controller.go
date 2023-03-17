@@ -2,17 +2,27 @@ package controller
 
 import (
 	"context"
-	"log"
 	"sale-service/api"
 	"sale-service/common"
 
 	"github.com/gin-gonic/gin"
+	"github.com/importcjj/sensitive"
 	gogpt "github.com/sashabaranov/go-gpt3"
 )
 
-type ChatgptController struct{}
+type chatgptController struct {
+	filter *sensitive.Filter
+}
 
-func (cc *ChatgptController) RegisterRouter(app *gin.Engine) {
+var ChatgptController *chatgptController
+
+func init() {
+	ChatgptController = &chatgptController{}
+	ChatgptController.filter = sensitive.New()
+	ChatgptController.filter.LoadWordDict("dict.txt")
+}
+
+func (cc *chatgptController) RegisterRouter(app *gin.Engine) {
 	group := app.Group("/chatgpt")
 	// group.POST("/create", cc.addLuck)
 	group.POST("/chat", cc.chat)
@@ -30,15 +40,17 @@ func (cc *ChatgptController) RegisterRouter(app *gin.Engine) {
 // 	common.JSON(c, service.LuckServiceInstance.AddLuck(&luck))
 // }
 
-func (cc *ChatgptController) chat(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-	c.Header("Access-Control-Allow-Headers", "DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization")
+func (cc *chatgptController) chat(c *gin.Context) {
 	var query struct {
 		Prompt string `form:"prompt" binding:"required"`
 	}
 	if err := c.BindJSON(&query); err != nil {
 		common.JSON(c, api.JsonError(api.GetLuckFailErr).JsonWithMsg(err.Error()))
+		return
+	}
+	res, word := cc.filter.Validate(query.Prompt)
+	if !res {
+		common.JSON(c, api.JsonError(api.ChatgptFailErr).JsonWithMsg("谨言慎行啊朋友！违禁词："+word))
 		return
 	}
 	cg := gogpt.NewClient("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")
@@ -53,12 +65,10 @@ func (cc *ChatgptController) chat(c *gin.Context) {
 	ctx := context.Background()
 	resp, err := cg.CreateCompletion(ctx, req)
 	if err != nil {
-		log.Println("err:" + err.Error())
 		common.JSON(c, api.JsonError(api.GetLuckFailErr).JsonWithMsg(err.Error()))
 		return
 	}
 	common.JSON(c, api.JsonSuccess().JsonWithData(resp))
-	// common.JSON(c, api.JsonError(api.GetLuckFailErr).JsonWithMsg(resp.Choices[0].Text))
 }
 
 // func (lc *LuckController) addDraw(c *gin.Context) {

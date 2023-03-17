@@ -42,6 +42,8 @@ var (
 	LuckRepeatErr      = NewError(50005, "您已经抽过奖")
 	LuckUpdatePhoneErr = NewError(50006, "更新中奖用户手机号失败")
 
+	ChatgptFailErr = NewError(60001, "出了一点小问题，努力修复中☺️")
+
 	JwtValidationErr      = NewError(90001, "令牌验证失败")
 	JwtAgentValidationErr = NewError(90004, "Agent令牌验证失败")
 	JwtExpiresErr         = NewError(90002, "无效令牌")
