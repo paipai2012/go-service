@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/importcjj/sensitive"
-	gogpt "github.com/sashabaranov/go-openai"
+	openai "github.com/sashabaranov/go-openai"
 )
 
 type chatgptController struct {
@@ -54,22 +54,44 @@ func (cc *chatgptController) chat(c *gin.Context) {
 		common.JSON(c, api.JsonError(api.ChatgptFailErr).JsonWithMsg("谨言慎行啊朋友！违禁词："+word))
 		return
 	}
-	cg := gogpt.NewClient("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")
-	req := gogpt.CompletionRequest{
-		Model:       gogpt.GPT4, // 选择的模型
-		MaxTokens:   500,
-		N:           1,
-		Stop:        nil,
-		Temperature: 0.5,
-		Prompt:      query.Prompt, //要问的问题
-	}
-	ctx := context.Background()
-	resp, err := cg.CreateCompletion(ctx, req)
+
+	client := openai.NewClient("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")
+	resp, err := client.CreateChatCompletion(
+		context.Background(),
+		openai.ChatCompletionRequest{
+			Model: openai.GPT4,
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Role:    openai.ChatMessageRoleUser,
+					Content: query.Prompt,
+				},
+			},
+		},
+	)
+
 	if err != nil {
 		common.JSON(c, api.JsonError(api.GetLuckFailErr).JsonWithMsg(err.Error()))
 		return
 	}
+
 	common.JSON(c, api.JsonSuccess().JsonWithData(resp))
+
+	// cg := gogpt.NewClient("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")
+	// req := gogpt.CompletionRequest{
+	// 	Model:       gogpt.GPT4, // 选择的模型
+	// 	MaxTokens:   500,
+	// 	N:           1,
+	// 	Stop:        nil,
+	// 	Temperature: 0.5,
+	// 	Prompt:      query.Prompt, //要问的问题
+	// }
+	// ctx := context.Background()
+	// resp, err := cg.CreateCompletion(ctx, req)
+	// if err != nil {
+	// 	common.JSON(c, api.JsonError(api.GetLuckFailErr).JsonWithMsg(err.Error()))
+	// 	return
+	// }
+	// common.JSON(c, api.JsonSuccess().JsonWithData(resp))
 }
 
 // func (lc *LuckController) addDraw(c *gin.Context) {
