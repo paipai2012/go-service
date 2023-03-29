@@ -11,7 +11,7 @@ require (
 	github.com/googollee/go-socket.io v1.4.4
 	github.com/importcjj/sensitive v0.0.0-20200106142752-42d1c505be7b
 	github.com/jinzhu/copier v0.3.5
-	github.com/sashabaranov/go-gpt3 v1.1.0
+	github.com/sashabaranov/go-openai v1.5.7
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/cast v1.5.0
 	gopkg.in/yaml.v2 v2.4.0
