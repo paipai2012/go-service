@@ -55,7 +55,7 @@ func (cc *chatgptController) chat(c *gin.Context) {
 		return
 	}
 
-	client := openai.NewClient("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")
+	client := openai.NewClient("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")
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
