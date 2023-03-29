@@ -56,7 +56,7 @@ func (cc *chatgptController) chat(c *gin.Context) {
 	}
 	cg := gogpt.NewClient("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")
 	req := gogpt.CompletionRequest{
-		Model:       gogpt.GPT3TextDavinci003, // 选择的模型
+		Model:       gogpt.GPT4, // 选择的模型
 		MaxTokens:   500,
 		N:           1,
 		Stop:        nil,
